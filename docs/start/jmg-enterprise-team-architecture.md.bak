@@ -42,7 +42,7 @@ Een volledig functioneel content productie team bestaande uit gespecialiseerde A
 
 ---
 
-### 2. **Content Strategist** (MiniMax abab6.5-chat)
+### 2. **Content Strategist** (Sonnet 4.5)
 **Rol:** Content planning, keyword research, trend analysis
 
 **Verantwoordelijkheden:**
@@ -89,7 +89,7 @@ export const meta = {
 
 ---
 
-### 3. **Senior Copywriter** (z.ai GLM-4-Flash)
+### 3. **Senior Copywriter** (Opus 4.5)
 **Rol:** Long-form content creatie, blog posts, whitepapers
 
 **Verantwoordelijkheden:**
@@ -127,7 +127,7 @@ export const meta = {
 
 ---
 
-### 4. **Social Media Manager** (MiniMax abab6.5-chat)
+### 4. **Social Media Manager** (Sonnet 4.5)
 **Rol:** Social media content, community management, engagement
 
 **Verantwoordelijkheden:**
@@ -174,7 +174,7 @@ export const meta = {
 
 ---
 
-### 5. **SEO Specialist** (MiniMax abab6.5-chat)
+### 5. **SEO Specialist** (Sonnet 4.5)
 **Rol:** Technical SEO, on-page optimization, link building
 
 **Verantwoordelijkheden:**
@@ -221,7 +221,7 @@ export const meta = {
 
 ---
 
-### 6. **Video Content Creator** (z.ai GLM-4-Flash)
+### 6. **Video Content Creator** (Opus 4.5)
 **Rol:** Video scripts, YouTube optimization, video content strategy
 
 **Verantwoordelijkheden:**
@@ -265,7 +265,7 @@ export const meta = {
 
 ---
 
-### 7. **Email Marketing Specialist** (MiniMax abab6.5-chat)
+### 7. **Email Marketing Specialist** (Sonnet 4.5)
 **Rol:** Email campaigns, newsletters, automation flows
 
 **Verantwoordelijkheden:**
@@ -309,7 +309,7 @@ export const meta = {
 
 ---
 
-### 8. **Data Analyst** (MiniMax abab6.5-chat)
+### 8. **Data Analyst** (Sonnet 4.5)
 **Rol:** Analytics, reporting, performance tracking
 
 **Verantwoordelijkheden:**
@@ -356,7 +356,7 @@ export const meta = {
 
 ---
 
-### 9. **Graphic Designer** (z.ai GLM-4v + DALL-E/Midjourney)
+### 9. **Graphic Designer** (Haiku + DALL-E/Midjourney)
 **Rol:** Visual content, graphics, infographics
 
 **Verantwoordelijkheden:**
@@ -400,7 +400,7 @@ export const meta = {
 
 ---
 
-### 10. **Project Manager / Scrum Master** (MiniMax abab6.5-chat)
+### 10. **Project Manager / Scrum Master** (Sonnet 4.5)
 **Rol:** Workflow management, deadline tracking, team coordination
 
 **Verantwoordelijkheden:**
@@ -512,23 +512,9 @@ Location: Falkenstein, Germany (EU data privacy)
     }
   },
 
-  models: {
-    providers: {
-      "z.ai": {
-        apiKey: process.env.ZAI_API_KEY,
-        baseURL: "https://api.z.ai/v1"
-      },
-      "minimax": {
-        apiKey: process.env.MINIMAX_API_KEY,
-        baseURL: "https://api.minimax.chat/v1",
-        groupId: process.env.MINIMAX_GROUP_ID
-      }
-    }
-  },
-
   agents: {
     defaults: {
-      model: "minimax/abab6.5-chat",
+      model: "anthropic/opus-4.5",
       workspace: "/home/clawdbot/.clawdbot/agents/ceo/workspace",
       blockStreaming: true,
       queue: {
@@ -538,81 +524,81 @@ Location: Falkenstein, Germany (EU data privacy)
     },
 
     routing: {
-      // CEO - Orchestrator (z.ai GLM-4-Flash)
+      // CEO - Orchestrator (Opus 4.5)
       ceo: {
-        model: "z.ai/glm-4-flash",
+        model: "anthropic/opus-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/ceo/workspace",
         channels: ["telegram:CEO", "slack:#ceo-commands"],
         systemPrompt: "Je bent de CEO van JMG Content Group..."
       },
 
-      // Content Strategist (MiniMax abab6.5-chat)
+      // Content Strategist (Sonnet 4.5)
       strategist: {
-        model: "minimax/abab6.5-chat",
+        model: "anthropic/sonnet-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/strategist/workspace",
         channels: ["slack:#strategy"],
         systemPrompt: "Je bent de Content Strategist..."
       },
 
-      // Senior Copywriter (z.ai GLM-4-Flash - hoogste kwaliteit)
+      // Senior Copywriter (Opus 4.5 - hoogste kwaliteit)
       copywriter: {
-        model: "z.ai/glm-4-flash",
+        model: "anthropic/opus-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/copywriter/workspace",
         channels: ["slack:#content-production"],
         systemPrompt: "Je bent de Senior Copywriter..."
       },
 
-      // Social Media Manager (MiniMax abab6.5-chat)
+      // Social Media Manager (Sonnet 4.5)
       social: {
-        model: "minimax/abab6.5-chat",
+        model: "anthropic/sonnet-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/social/workspace",
         channels: ["slack:#social-media"],
         systemPrompt: "Je bent de Social Media Manager..."
       },
 
-      // SEO Specialist (MiniMax abab6.5-chat)
+      // SEO Specialist (Sonnet 4.5)
       seo: {
-        model: "minimax/abab6.5-chat",
+        model: "anthropic/sonnet-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/seo/workspace",
         channels: ["slack:#seo"],
         systemPrompt: "Je bent de SEO Specialist..."
       },
 
-      // Video Content Creator (z.ai GLM-4-Flash)
+      // Video Content Creator (Opus 4.5)
       video: {
-        model: "z.ai/glm-4-flash",
+        model: "anthropic/opus-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/video/workspace",
         channels: ["slack:#video-production"],
         systemPrompt: "Je bent de Video Content Creator..."
       },
 
-      // Email Marketing Specialist (MiniMax abab6.5-chat)
+      // Email Marketing Specialist (Sonnet 4.5)
       email: {
-        model: "minimax/abab6.5-chat",
+        model: "anthropic/sonnet-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/email/workspace",
         channels: ["slack:#email-marketing"],
         systemPrompt: "Je bent de Email Marketing Specialist..."
       },
 
-      // Data Analyst (MiniMax abab6.5-chat)
+      // Data Analyst (Sonnet 4.5)
       analyst: {
-        model: "minimax/abab6.5-chat",
+        model: "anthropic/sonnet-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/analyst/workspace",
         channels: ["slack:#analytics"],
         systemPrompt: "Je bent de Data Analyst..."
       },
 
-      // Graphic Designer (z.ai GLM-4.6v - vision model voor visuele analyse)
+      // Graphic Designer (Haiku - snel voor coordinatie)
       designer: {
-        model: "z.ai/glm-4v",  // Vision model voor image analysis
+        model: "anthropic/haiku",
         workspace: "/home/clawdbot/.clawdbot/agents/designer/workspace",
         channels: ["slack:#design"],
-        systemPrompt: "Je bent de Graphic Designer met vision capabilities voor brand consistency checks..."
+        systemPrompt: "Je bent de Graphic Designer..."
       },
 
-      // Project Manager (MiniMax abab6.5-chat)
+      // Project Manager (Sonnet 4.5)
       pm: {
-        model: "minimax/abab6.5-chat",
+        model: "anthropic/sonnet-4.5",
         workspace: "/home/clawdbot/.clawdbot/agents/pm/workspace",
         channels: ["slack:#project-management"],
         systemPrompt: "Je bent de Project Manager..."
@@ -706,9 +692,7 @@ services:
       - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
-      - ZAI_API_KEY=${ZAI_API_KEY}
-      - MINIMAX_API_KEY=${MINIMAX_API_KEY}
-      - MINIMAX_GROUP_ID=${MINIMAX_GROUP_ID}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
     command: npx clawdbot@latest gateway run --bind 0.0.0.0 --port 18789
     ports:
@@ -1107,19 +1091,18 @@ export async function run(context) {
 - CPX41 (8 cores, 32GB RAM): €50/maand
 
 **API Kosten (schatting voor actief gebruik):**
-- MiniMax + z.ai API kosten: €54-85/maand
-  - CEO (z.ai GLM-4-Flash): ~€8-12/maand
-  - Copywriter (z.ai GLM-4-Flash): ~€15-25/maand
-  - Video (z.ai GLM-4-Flash): ~€6-10/maand
-  - Designer (z.ai GLM-4v): ~€5-8/maand
-  - Strategist, Social, SEO, Email, Analyst, PM (6x MiniMax abab6.5): ~€20-30/maand totaal
+- Anthropic Claude (Opus 4.5 + Sonnet 4.5): €300-500/maand
+  - CEO (Opus): ~€100/maand
+  - Copywriter (Opus): ~€150/maand
+  - Video (Opus): ~€50/maand
+  - Overige (Sonnet): ~€150/maand
 
 - OpenAI (DALL-E/GPT-4 backup): €100/maand
 - Ahrefs/SEMrush API: €100/maand
 - Canva API: €20/maand
 - Misc (webhooks, storage): €30/maand
 
-**Totaal: €254-385/maand** (€154-285/maand zonder OpenAI backup)
+**Totaal: €600-800/maand**
 
 **ROI:**
 - Vervangwaarde van 10 FTE: €30.000-50.000/maand
@@ -1161,10 +1144,8 @@ mkdir -p ~/scripts
 # 7. Environment variables
 cat > ~/.env << 'EOF'
 CLAWDBOT_GATEWAY_TOKEN=your-secure-token
-ZAI_API_KEY=your-zai-key
-MINIMAX_API_KEY=your-minimax-key
-MINIMAX_GROUP_ID=your-minimax-group-id
-OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-key
+OPENAI_API_KEY=your-key
 SLACK_BOT_TOKEN=your-token
 TELEGRAM_BOT_TOKEN=your-token
 DISCORD_BOT_TOKEN=your-token
