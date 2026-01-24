@@ -5,6 +5,7 @@ Docs: https://docs.clawd.bot
 ## 2026.1.23 (Unreleased)
 
 ### Changes
+- Docs: add JMG Content Group 24/7 AI team architecture - complete guide for deploying 10 specialized AI agents as a content agency on Hetzner VPS, including deployment script and quick-start guide.
 - Docs: add comprehensive use cases guide (Dutch) covering 10 real-world applications.
 - Plugins: add optional llm-task JSON-only tool for workflows. (#1498) Thanks @vignesh07.
 - CLI: restart the gateway by default after `clawdbot update`; add `--no-restart` to skip it.
