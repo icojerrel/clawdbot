@@ -1,46 +1,46 @@
 ---
-title: "Use Cases"
-description: "Real-world use cases for Clawdbot across industries and workflows"
-summary: "Explore how Clawdbot can transform your personal and professional workflows"
+title: "Gebruikstoepassingen"
+description: "Real-world gebruikstoepassingen voor Clawdbot in verschillende sectoren en workflows"
+summary: "Ontdek hoe Clawdbot je persoonlijke en professionele workflows kan transformeren"
 ---
 
-# Use Cases
+# Gebruikstoepassingen
 
-Clawdbot's unique combination of multi-channel messaging, AI capabilities, voice interaction, automation, and self-hosted privacy enables powerful real-world applications. Here are 10 potential use cases that leverage Clawdbot's full feature set.
+Clawdbot's unieke combinatie van multi-channel messaging, AI-mogelijkheden, spraakinteractie, automatisering en zelf-gehoste privacy maakt krachtige real-world toepassingen mogelijk. Hier zijn 10 potentiële gebruikstoepassingen die gebruikmaken van Clawdbot's volledige functionaliteit.
 
-## 1. Personal Business Assistant
+## 1. Persoonlijke Zakelijke Assistent
 
-Manage all your business communication from a single AI assistant that works across every platform you use.
+Beheer al je zakelijke communicatie vanuit één AI-assistent die werkt op elk platform dat je gebruikt.
 
-**Key Features:**
-- Unified communication across WhatsApp, Telegram, Slack, Discord, Signal, iMessage, and Microsoft Teams
-- Automated appointment scheduling and reminders via [cron jobs](/concepts/cron-jobs)
-- Voice-activated task management on mobile devices with [Voice Wake](/nodes/voicewake) and [Talk Mode](/nodes/talk)
-- Context-aware conversation memory with [session management](/concepts/session)
-- Smart contact and conversation history recall
+**Kernfuncties:**
+- Uniforme communicatie via WhatsApp, Telegram, Slack, Discord, Signal, iMessage en Microsoft Teams
+- Geautomatiseerde afspraakplanning en herinneringen via [cron jobs](/concepts/cron-jobs)
+- Spraakgestuurde taakbeheer op mobiele apparaten met [Voice Wake](/nodes/voicewake) en [Talk Mode](/nodes/talk)
+- Contextbewust gespreksgeheugen met [session management](/concepts/session)
+- Slim contact- en gespreksgeschiedenis-herinnering
 
-**Example Workflow:**
+**Voorbeeldworkflow:**
 ```bash
-# Schedule daily briefing
+# Plan dagelijkse briefing
 clawdbot cron add --schedule "0 9 * * *" \
-  --command "clawdbot agent --message 'Daily briefing: calendar, tasks, priorities'"
+  --command "clawdbot agent --message 'Dagelijkse briefing: agenda, taken, prioriteiten'"
 
-# Voice-activate from iPhone
-"Hey Clawdbot, what's on my calendar today?"
+# Spraakactivatie vanaf iPhone
+"Hey Clawdbot, wat staat er vandaag op mijn agenda?"
 ```
 
-## 2. Multi-Channel Customer Service Automation
+## 2. Multi-Channel Klantenservice Automatisering
 
-Provide consistent, intelligent customer support across all messaging platforms your customers use.
+Bied consistente, intelligente klantenondersteuning op alle berichtenplatforms die je klanten gebruiken.
 
-**Key Features:**
-- Unified support across WhatsApp, Telegram, iMessage, Microsoft Teams, and Slack
-- Automated responses with [pairing-based security](/gateway/security) to prevent spam
-- Media processing for screenshots and documentation
-- [Webhook integration](/automation/webhook) with CRM systems
-- Multi-agent routing for different departments or support tiers
+**Kernfuncties:**
+- Uniforme ondersteuning via WhatsApp, Telegram, iMessage, Microsoft Teams en Slack
+- Geautomatiseerde antwoorden met [pairing-gebaseerde beveiliging](/gateway/security) om spam te voorkomen
+- Mediaverwerking voor screenshots en documentatie
+- [Webhook-integratie](/automation/webhook) met CRM-systemen
+- Multi-agent routing voor verschillende afdelingen of ondersteuningsniveaus
 
-**Example Configuration:**
+**Voorbeeldconfiguratie:**
 ```json5
 {
   channels: {
@@ -57,254 +57,254 @@ Provide consistent, intelligent customer support across all messaging platforms 
 }
 ```
 
-## 3. Team Collaboration Hub
+## 3. Team Samenwerkingshub
 
-Coordinate team activities with an AI assistant that bridges communication platforms and maintains shared knowledge.
+Coördineer teamactiviteiten met een AI-assistent die communicatieplatforms verbindt en gedeelde kennis behoudt.
 
-**Key Features:**
-- Central AI assistant coordinating between Discord, Slack, and Microsoft Teams
-- [Multi-agent routing](/concepts/multi-agent) for different team members or departments
-- Shared knowledge base with [workspace skills](/tools/skills)
-- Real-time [Canvas](/platforms/mac/canvas) for visual collaboration
-- [Group message handling](/concepts/group-messages) with mention gating
+**Kernfuncties:**
+- Centrale AI-assistent die coördineert tussen Discord, Slack en Microsoft Teams
+- [Multi-agent routing](/concepts/multi-agent) voor verschillende teamleden of afdelingen
+- Gedeelde kennisbank met [workspace skills](/tools/skills)
+- Real-time [Canvas](/platforms/mac/canvas) voor visuele samenwerking
+- [Groepsberichtverwerking](/concepts/group-messages) met mention-filtering
 
-**Example Setup:**
+**Voorbeeldsetup:**
 ```bash
-# Create team workspace
+# Maak team workspace
 clawdbot setup --workspace ~/.clawdbot/team
 
-# Add team skill
-cat > ~/.clawdbot/team/skills/team-knowledge.mjs << 'EOF'
+# Voeg team skill toe
+cat > ~/.clawdbot/team/skills/team-kennis.mjs << 'EOF'
 export const meta = {
-  name: 'team-knowledge',
-  description: 'Access team documentation and procedures'
+  name: 'team-kennis',
+  description: 'Toegang tot teamdocumentatie en procedures'
 }
 export async function run(context, { query }) {
-  // Query team knowledge base
+  // Zoek in team kennisbank
 }
 EOF
 ```
 
-## 4. Smart Home Control System
+## 4. Slim Thuisbesturingssysteem
 
-Control your entire smart home through natural conversation across multiple devices.
+Bedien je hele slimme huis via natuurlijke conversatie op meerdere apparaten.
 
-**Key Features:**
-- Voice-activated control with [Voice Wake](/nodes/voicewake) on macOS, iOS, and Android
-- IoT device control via [node commands](/nodes)
-- Automated rules using [cron jobs](/automation/cron-jobs) and [webhooks](/automation/webhook)
-- Location-based automation via location tools
-- Integration with Home Assistant via [community add-ons](https://github.com/ngutman/clawdbot-ha-addon)
+**Kernfuncties:**
+- Spraakgestuurde bediening met [Voice Wake](/nodes/voicewake) op macOS, iOS en Android
+- IoT-apparaatbediening via [node commands](/nodes)
+- Geautomatiseerde regels met [cron jobs](/automation/cron-jobs) en [webhooks](/automation/webhook)
+- Locatie-gebaseerde automatisering via locatietools
+- Integratie met Home Assistant via [community add-ons](https://github.com/ngutman/clawdbot-ha-addon)
 
-**Example Voice Commands:**
+**Voorbeeldspraakopdrachten:**
 ```
-"Turn off all lights in the living room"
-"Set temperature to 72 degrees"
-"What's the status of my security cameras?"
-"Start the robot vacuum when I leave"
+"Zet alle lampen in de woonkamer uit"
+"Stel de temperatuur in op 21 graden"
+"Wat is de status van mijn beveiligingscamera's?"
+"Start de robotstofzuiger als ik wegga"
 ```
 
-## 5. Creative Content Assistant
+## 5. Creatieve Content Assistent
 
-Streamline content creation workflows with multi-modal AI assistance.
+Stroomlijn workflows voor contentcreatie met multi-modale AI-assistentie.
 
-**Key Features:**
-- Multi-modal content creation (text, images, audio, video)
-- [Media pipeline](/nodes/images) for video and audio transcription
-- [Browser automation](/cli/browser) for research and data gathering
-- [Canvas](/platforms/mac/canvas) for visual design and editing
-- Voice dictation and transcription on mobile devices
+**Kernfuncties:**
+- Multi-modale contentcreatie (tekst, afbeeldingen, audio, video)
+- [Media pipeline](/nodes/images) voor video- en audiotranscriptie
+- [Browser automation](/cli/browser) voor onderzoek en dataverzameling
+- [Canvas](/platforms/mac/canvas) voor visueel ontwerp en bewerking
+- Spraakmemo's en transcriptie op mobiele apparaten
 
-**Example Workflow:**
+**Voorbeeldworkflow:**
 ```bash
-# Research and create content via chat
-"Research the top 5 AI trends in 2026 and create a blog post outline"
+# Onderzoek en creëer content via chat
+"Onderzoek de top 5 AI-trends in 2026 en maak een blogpost-outline"
 
-# Voice memo to article
-"Transcribe this voice memo and turn it into a Twitter thread"
+# Spraakmemo naar artikel
+"Transcribeer deze spraakmemo en maak er een Twitter-thread van"
 
-# Visual content
-"Create a diagram showing our product architecture on Canvas"
+# Visuele content
+"Maak een diagram van onze productarchitectuur op Canvas"
 ```
 
-## 6. Developer Productivity Tool
+## 6. Ontwikkelaar Productiviteitstool
 
-Accelerate development workflows with AI-powered coding assistance across your preferred communication channels.
+Versnel ontwikkelworkflows met AI-aangedreven codeer-assistentie via je favoriete communicatiekanalen.
 
-**Key Features:**
-- Code assistance with [workspace integration](/concepts/agent-workspace)
-- Terminal automation via exec tools
-- Git and GitHub integration
-- Documentation generation and maintenance
-- [Browser automation](/cli/browser) for testing and debugging
-- [Multi-agent sandbox](/multi-agent-sandbox-tools) for isolated development environments
+**Kernfuncties:**
+- Code-assistentie met [workspace integratie](/concepts/agent-workspace)
+- Terminal-automatisering via exec tools
+- Git en GitHub integratie
+- Documentatiegeneratie en onderhoud
+- [Browser automation](/cli/browser) voor testen en debuggen
+- [Multi-agent sandbox](/multi-agent-sandbox-tools) voor geïsoleerde ontwikkelomgevingen
 
-**Example Commands:**
+**Voorbeeldcommando's:**
 ```bash
 # Code review via Telegram
-"Review the latest PR on our repository"
+"Bekijk de laatste PR op onze repository"
 
 # Deploy via WhatsApp
-"Run the production deployment checklist"
+"Voer de productie-deploychecklist uit"
 
-# Debug from phone
-"Check the error logs for the API server and diagnose the issue"
+# Debug vanaf telefoon
+"Controleer de error logs van de API server en diagnoseer het probleem"
 ```
 
-## 7. Healthcare Assistant
+## 7. Gezondheidszorg Assistent
 
-Manage health routines and medical information with privacy-first, self-hosted assistance.
+Beheer gezondheidsroutines en medische informatie met privacy-first, zelf-gehoste assistentie.
 
-**Key Features:**
-- Medication reminders via [cron scheduling](/automation/cron-jobs)
-- Appointment management across multiple messaging platforms
-- Private, self-hosted data storage (no cloud dependencies)
-- Voice access for hands-free operation
-- Integration with health devices (see [Oura Ring example](/start/showcase#oura-ring-health-assistant))
+**Kernfuncties:**
+- Medicatieherinneringen via [cron scheduling](/automation/cron-jobs)
+- Afspraakbeheer op meerdere berichtenplatforms
+- Privé, zelf-gehoste gegevensopslag (geen cloud-afhankelijkheden)
+- Spraaktoegang voor handsfree gebruik
+- Integratie met gezondheidsapparaten (zie [Oura Ring voorbeeld](/start/showcase#oura-ring-health-assistant))
 
-**Example Setup:**
+**Voorbeeldsetup:**
 ```bash
-# Daily medication reminder
+# Dagelijkse medicatieherinnering
 clawdbot cron add --schedule "0 9,21 * * *" \
-  --command "clawdbot message send --to +1234567890 --message 'Time to take medication'"
+  --command "clawdbot message send --to +1234567890 --message 'Tijd om medicatie te nemen'"
 
-# Health tracking skill
+# Gezondheidstracking skill
 clawdbot skills install health-tracker
 ```
 
-**Privacy Note:**
-All health data stays on your device. Clawdbot never sends your medical information to external services except LLM providers you explicitly configure.
+**Privacy-opmerking:**
+Alle gezondheidsgegevens blijven op je apparaat. Clawdbot stuurt nooit je medische informatie naar externe diensten, behalve LLM-providers die je expliciet configureert.
 
-## 8. Educational Platform
+## 8. Educatief Platform
 
-Create personalized learning experiences with AI tutoring across devices.
+Creëer gepersonaliseerde leerervaringen met AI-tutoring op verschillende apparaten.
 
-**Key Features:**
-- Multi-channel interaction with students (WhatsApp, Telegram, Discord, Slack)
-- [Canvas](/platforms/mac/canvas) for visual explanations and diagrams
-- Voice-based learning on mobile devices with [Talk Mode](/nodes/talk)
-- [Session-based progress tracking](/concepts/session)
-- Custom learning skills per subject or curriculum
+**Kernfuncties:**
+- Multi-channel interactie met studenten (WhatsApp, Telegram, Discord, Slack)
+- [Canvas](/platforms/mac/canvas) voor visuele uitleg en diagrammen
+- Spraak-gebaseerd leren op mobiele apparaten met [Talk Mode](/nodes/talk)
+- [Session-gebaseerde voortgangsregistratie](/concepts/session)
+- Aangepaste leervaardigheden per vak of curriculum
 
-**Example Tutoring Session:**
+**Voorbeeldleersessie:**
 ```
-Student: "Explain photosynthesis"
-Clawdbot: [Creates visual diagram on Canvas with labeled stages]
-Clawdbot: "Let me break this down step by step..."
+Student: "Leg fotosynthese uit"
+Clawdbot: [Creëert visueel diagram op Canvas met gelabelde fasen]
+Clawdbot: "Laat me dit stap voor stap uitleggen..."
 
-Student: "Quiz me on this topic"
-Clawdbot: "Great! Here are 5 questions to test your understanding..."
+Student: "Toets me over dit onderwerp"
+Clawdbot: "Prima! Hier zijn 5 vragen om je begrip te testen..."
 ```
 
-## 9. Sales and CRM Assistant
+## 9. Verkoop en CRM Assistent
 
-Streamline sales operations with intelligent lead management and automated follow-ups.
+Stroomlijn verkoopprocessen met intelligent leadbeheer en geautomatiseerde follow-ups.
 
-**Key Features:**
-- Lead management across WhatsApp, Telegram, iMessage, and Slack
-- Automated follow-ups with [cron jobs](/automation/cron-jobs)
-- Contact history and context preservation via [session memory](/concepts/session)
-- [Webhook integration](/automation/webhook) with existing CRM systems
-- Voice notes transcription and analysis
+**Kernfuncties:**
+- Leadbeheer via WhatsApp, Telegram, iMessage en Slack
+- Geautomatiseerde follow-ups met [cron jobs](/automation/cron-jobs)
+- Contactgeschiedenis en contextbehoud via [session memory](/concepts/session)
+- [Webhook-integratie](/automation/webhook) met bestaande CRM-systemen
+- Spraakmemo-transcriptie en analyse
 
-**Example Workflow:**
+**Voorbeeldworkflow:**
 ```bash
-# Morning sales briefing
-clawdbot agent --message "Show me all leads from yesterday that need follow-up"
+# Ochtend verkoop briefing
+clawdbot agent --message "Toon me alle leads van gisteren die follow-up nodig hebben"
 
-# Auto-log conversations
-# Configure webhook to sync conversations to CRM
-clawdbot config set webhooks.crm.url https://crm.company.com/api/webhook
+# Auto-log gesprekken
+# Configureer webhook om gesprekken te synchroniseren met CRM
+clawdbot config set webhooks.crm.url https://crm.bedrijf.com/api/webhook
 clawdbot config set webhooks.crm.events "message.received,message.sent"
 
-# Follow-up reminders
+# Follow-up herinneringen
 clawdbot cron add --schedule "0 10 * * 1-5" \
-  --command "clawdbot agent --message 'List leads needing follow-up today'"
+  --command "clawdbot agent --message 'Lijst leads die vandaag follow-up nodig hebben'"
 ```
 
-## 10. Personal Knowledge Management System
+## 10. Persoonlijk Kennisbeheersysteem
 
-Build a comprehensive personal knowledge base with long-term memory and cross-platform access.
+Bouw een uitgebreide persoonlijke kennisbank met langetermijngeheugen en cross-platform toegang.
 
-**Key Features:**
-- Research assistant with long-term [memory](/concepts/memory)
-- Multi-platform access (desktop, mobile, web)
-- [Browser automation](/cli/browser) for data collection and research
-- [Skills](/tools/skills) for specialized knowledge domains
-- Voice queries on mobile devices
-- Session-based context preservation
+**Kernfuncties:**
+- Onderzoeksassistent met langetermijn [geheugen](/concepts/memory)
+- Multi-platform toegang (desktop, mobiel, web)
+- [Browser automation](/cli/browser) voor dataverzameling en onderzoek
+- [Skills](/tools/skills) voor gespecialiseerde kennisdomeinen
+- Spraakquery's op mobiele apparaten
+- Session-gebaseerd contextbehoud
 
-**Example Knowledge Workflows:**
+**Voorbeeldkennis-workflows:**
 ```bash
-# Research and summarize
-"Research the latest developments in quantum computing and save key findings"
+# Onderzoek en vat samen
+"Onderzoek de laatste ontwikkelingen in quantum computing en bewaar belangrijke bevindingen"
 
-# Voice memo to knowledge base
-"Add this to my project notes: [voice recording]"
+# Spraakmemo naar kennisbank
+"Voeg dit toe aan mijn projectnotities: [spraakopname]"
 
-# Cross-reference and recall
-"What did I learn about React performance optimization last month?"
+# Kruisreferentie en herinnering
+"Wat heb ik vorige maand geleerd over React-prestatie-optimalisatie?"
 
-# Browser-based research
-"Find and summarize the top 10 articles on sustainable agriculture from 2026"
+# Browser-gebaseerd onderzoek
+"Vind en vat de top 10 artikelen over duurzame landbouw uit 2026 samen"
 ```
 
 ---
 
-## Key Capabilities Enabling These Use Cases
+## Kernmogelijkheden die Deze Gebruikstoepassingen Mogelijk Maken
 
-All these use cases are powered by Clawdbot's core capabilities:
+Al deze gebruikstoepassingen worden mogelijk gemaakt door Clawdbot's kernmogelijkheden:
 
-### Multi-Channel Integration
-- **10+ messaging platforms**: WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Microsoft Teams, BlueBubbles, Matrix, Zalo, WebChat
-- Unified inbox and consistent experience across all channels
-- [Channel routing](/concepts/channel-routing) for sophisticated message handling
+### Multi-Channel Integratie
+- **10+ berichtenplatforms**: WhatsApp, Telegram, Slack, Discord, Signal, iMessage, Microsoft Teams, BlueBubbles, Matrix, Zalo, WebChat
+- Uniforme inbox en consistente ervaring op alle kanalen
+- [Channel routing](/concepts/channel-routing) voor geavanceerde berichtverwerking
 
-### Voice & Mobile
-- [Voice Wake](/nodes/voicewake) for always-on speech activation
-- [Talk Mode](/nodes/talk) for conversational interaction
-- Cross-platform support (macOS, iOS, Android)
+### Spraak & Mobiel
+- [Voice Wake](/nodes/voicewake) voor altijd-aan spraakactivatie
+- [Talk Mode](/nodes/talk) voor conversationele interactie
+- Cross-platform ondersteuning (macOS, iOS, Android)
 
-### Automation
-- [Cron jobs](/automation/cron-jobs) for scheduled tasks
-- [Webhooks](/automation/webhook) for external integrations
-- [Polling](/automation/poll) for periodic checks
-- Browser automation for web interactions
+### Automatisering
+- [Cron jobs](/automation/cron-jobs) voor geplande taken
+- [Webhooks](/automation/webhook) voor externe integraties
+- [Polling](/automation/poll) voor periodieke controles
+- Browser automation voor webinteracties
 
-### Security & Privacy
-- [Self-hosted](/install) - full control over your data
-- [Pairing-based access control](/gateway/security) for DM protection
-- Local-first architecture with no required cloud services
-- Configurable [DM policies](/gateway/security#dm-access-control)
+### Beveiliging & Privacy
+- [Zelf-gehost](/install) - volledige controle over je data
+- [Pairing-gebaseerde toegangscontrole](/gateway/security) voor DM-bescherming
+- Local-first architectuur zonder verplichte clouddiensten
+- Configureerbaar [DM-beleid](/gateway/security#dm-access-control)
 
-### Visual & Interactive
-- [Canvas](/platforms/mac/canvas) for agent-driven visual workspace
-- [A2UI](/platforms/mac/canvas#canvas-a2ui) for interactive interfaces
-- Screen recording and camera access on mobile devices
+### Visueel & Interactief
+- [Canvas](/platforms/mac/canvas) voor agent-aangedreven visuele workspace
+- [A2UI](/platforms/mac/canvas#canvas-a2ui) voor interactieve interfaces
+- Schermopname en cameratoegang op mobiele apparaten
 
-### Agent Architecture
-- [Multi-agent routing](/concepts/multi-agent) for isolated workspaces
-- [Session management](/concepts/session) for context preservation
-- [Skills system](/tools/skills) for extensibility
-- [Plugin architecture](/plugin) for custom integrations
+### Agent Architectuur
+- [Multi-agent routing](/concepts/multi-agent) voor geïsoleerde workspaces
+- [Session management](/concepts/session) voor contextbehoud
+- [Skills systeem](/tools/skills) voor uitbreidbaarheid
+- [Plugin architectuur](/plugin) voor aangepaste integraties
 
 ---
 
-## Getting Started
+## Aan de Slag
 
-Ready to implement one of these use cases? Start with the [onboarding wizard](/start/wizard):
+Klaar om een van deze gebruikstoepassingen te implementeren? Begin met de [onboarding wizard](/start/wizard):
 
 ```bash
 npm install -g clawdbot@latest
 clawdbot onboard --install-daemon
 ```
 
-Then explore:
-- [Configuration guide](/gateway/configuration) for customizing behavior
-- [Skills documentation](/tools/skills) for extending capabilities
-- [Channels setup](/channels) for connecting messaging platforms
-- [Showcase](/start/showcase) for community examples
+Verken vervolgens:
+- [Configuratiegids](/gateway/configuration) voor het aanpassen van gedrag
+- [Skills documentatie](/tools/skills) voor het uitbreiden van mogelijkheden
+- [Channels setup](/channels) voor het verbinden van berichtenplatforms
+- [Showcase](/start/showcase) voor community-voorbeelden
 
 <Info>
-Have a unique use case? Share it in [#showcase on Discord](https://discord.gg/clawd) or [contribute to the docs](https://github.com/clawdbot/clawdbot).
+Heb je een unieke gebruikstoepassing? Deel deze in [#showcase op Discord](https://discord.gg/clawd) of [draag bij aan de docs](https://github.com/clawdbot/clawdbot).
 </Info>
