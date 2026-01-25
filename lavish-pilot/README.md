@@ -112,6 +112,81 @@ Fill these in `~/.lavish-pilot/.env`:
 
 ---
 
+## 🧠 Agent Swarm Architecture
+
+This deployment uses **task-based coordination** for efficient, parallel execution of setup and ongoing operations.
+
+### Key Concepts
+
+**Task-Based Coordination**
+- Independent tasks run in parallel for faster deployment
+- Dependencies are tracked via a task graph
+- Each agent can operate autonomously or collaborate via shared task state
+
+**Parallel Execution**
+- Setup steps that don't depend on each other run simultaneously
+- Example: Documentation setup, skills deployment, and agent configuration can all run at once
+- The gateway only starts after all prerequisites are complete
+
+**Dependency Graph for Deployment**
+
+```json
+{
+  "1": {
+    "task": "Documentation setup",
+    "status": "pending",
+    "blockedBy": []
+  },
+  "2": {
+    "task": "Skills deployment",
+    "status": "pending",
+    "blockedBy": []
+  },
+  "3": {
+    "task": "Agent configuration (10 agents)",
+    "status": "pending",
+    "blockedBy": []
+  },
+  "4": {
+    "task": "Gateway startup",
+    "status": "pending",
+    "blockedBy": [1, 2, 3]
+  },
+  "5": {
+    "task": "Verification & health check",
+    "status": "pending",
+    "blockedBy": [4]
+  }
+}
+```
+
+### Multi-Agent Collaboration Patterns
+
+**Daily Content Production:**
+- CEO creates task list for the day
+- Tasks are distributed to specialist agents (Copywriter, Social Manager, Designer)
+- Each agent updates task status as they work
+- Data Analyst aggregates results at end of day
+
+**Weekly Strategy Review:**
+- Strategist analyzes performance metrics
+- Creates task list for optimization opportunities
+- Specialists execute improvements in parallel
+- Project Manager tracks completion
+
+### Task Persistence
+
+Set `CLAUDE_CODE_TASK_LIST_ID` environment variable to maintain task state across agent sessions:
+
+```bash
+# In your shell profile or deployment script
+export CLAUDE_CODE_TASK_LIST_ID="lavish-pilot-deployment"
+```
+
+This ensures all agents in the swarm share the same task context and can pick up where others left off.
+
+---
+
 ## 📅 Daily Workflow
 
 **Automated via cron:**
@@ -252,6 +327,46 @@ ls -la ~/.clawdbot/skills/
 
 ## 🎯 Next Steps After Deployment
 
+### Using Task-Based Orchestration
+
+For complex workflows, use the Task tool to coordinate agent activities:
+
+**Example: First Week Content Launch**
+
+```bash
+# CEO agent creates the task list
+clawdbot agent --agent ceo --message "Create a task list for our first week of Lavish content:
+1. Audit existing social media presence
+2. Create 7-day content calendar
+3. Design 5 Instagram posts
+4. Write 3 blog articles
+5. Schedule all content
+6. Setup analytics tracking
+
+Use the Task tool to track these."
+```
+
+The CEO will create a structured task list that all agents can reference. Each specialist agent can then pick up their assigned tasks:
+
+```bash
+# Designer works on visuals
+clawdbot agent --agent designer --message "Check the task list and complete the Instagram post designs"
+
+# Copywriter handles blog content
+clawdbot agent --agent copywriter --message "Check the task list and write the blog articles"
+
+# Social Manager schedules everything
+clawdbot agent --agent social --message "Once all content is ready, schedule it using the meta-post skill"
+```
+
+**Task persistence across sessions:**
+```bash
+# Set this in your environment to maintain task state
+export CLAUDE_CODE_TASK_LIST_ID="lavish-week1-launch"
+```
+
+### Manual Setup Steps
+
 1. **Verify API keys**
    ```bash
    nano ~/.lavish-pilot/.env
@@ -276,6 +391,12 @@ ls -la ~/.clawdbot/skills/
 5. **Monitor progress**
    ```bash
    tail -f ~/.lavish-pilot/logs/daily-*.log
+   ```
+
+6. **Track tasks across agent sessions**
+   ```bash
+   # Check current task status from any agent
+   clawdbot agent --agent pm --message "Show me the current task list status"
    ```
 
 ---
