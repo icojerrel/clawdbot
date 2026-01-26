@@ -757,6 +757,796 @@ export async function run(context, { error, agent, task }) {
 
 ---
 
+## 🔄 Task-Based Skill Orchestration
+
+**Advanced workflow patterns voor complex campaigns met multi-agent coordination.**
+
+Het JMG Enterprise Team gebruikt task-based orchestration om complexe marketing campaigns te automatiseren. Skills worden gecoördineerd via dependency graphs, parallel execution, en conditional chains.
+
+---
+
+### 1. Multi-Skill Workflows: Sequential Chaining
+
+**Use Case: Complete Instagram Campaign Creation**
+
+Een Instagram campaign vereist multiple skills in sequence: hashtag research → visual design → content posting. De CEO agent creëert een task graph die deze skills choreert.
+
+**Task Graph (JSON):**
+
+```json
+{
+  "taskListId": "campaign_instagram_summer_launch",
+  "createdBy": "ceo",
+  "tasks": [
+    {
+      "id": "task_1",
+      "content": "Generate trending hashtags for summer cocktails campaign",
+      "activeForm": "Generating hashtags with hashtag-generator skill",
+      "status": "pending",
+      "assignedTo": "strategist",
+      "skill": "hashtag-generator",
+      "skillParams": {
+        "seedKeywords": ["summer cocktails", "lavish drinks", "festival drinks"],
+        "targetPlatform": "instagram",
+        "count": 30
+      },
+      "dependencies": [],
+      "output": null
+    },
+    {
+      "id": "task_2",
+      "content": "Design Instagram visual using generated hashtags",
+      "activeForm": "Creating visual with DALL-E based on hashtag themes",
+      "status": "pending",
+      "assignedTo": "designer",
+      "skill": "dalle-generate",
+      "skillParams": {
+        "prompt": "${task_1.output.topHashtags} - vibrant summer drinks, festival aesthetic",
+        "size": "1080x1080"
+      },
+      "dependencies": ["task_1"],
+      "output": null
+    },
+    {
+      "id": "task_3",
+      "content": "Upload visual to Cloudinary for CDN hosting",
+      "activeForm": "Uploading to Cloudinary",
+      "status": "pending",
+      "assignedTo": "designer",
+      "skill": "cloudinary-upload",
+      "skillParams": {
+        "filePath": "${task_2.output.url}",
+        "folder": "lavish/campaigns/summer-2026"
+      },
+      "dependencies": ["task_2"],
+      "output": null
+    },
+    {
+      "id": "task_4",
+      "content": "Publish Instagram post with hashtags and visual",
+      "activeForm": "Publishing to Instagram via meta-post skill",
+      "status": "pending",
+      "assignedTo": "social",
+      "skill": "meta-post",
+      "skillParams": {
+        "platform": "instagram",
+        "caption": "Summer is here! 🍹☀️ ${task_1.output.caption}\n\n${task_1.output.hashtags}",
+        "mediaUrl": "${task_3.output.url}",
+        "scheduledTime": null
+      },
+      "dependencies": ["task_1", "task_3"],
+      "output": null
+    }
+  ]
+}
+```
+
+**Skill Invocation Code:**
+
+```javascript
+// ~/.clawdbot/agents/ceo/workflows/instagram-campaign.mjs
+export const meta = {
+  name: 'instagram-campaign',
+  description: 'Orchestrate full Instagram campaign with multi-skill chain'
+}
+
+export async function run(context, { theme, scheduledTime }) {
+  const taskListId = `campaign_instagram_${theme}_${Date.now()}`;
+
+  // Step 1: Generate hashtags (Task 1)
+  const hashtagTask = await context.createTask({
+    taskListId,
+    content: `Generate trending hashtags for ${theme} campaign`,
+    assignedTo: 'strategist',
+    skill: 'hashtag-generator',
+    skillParams: {
+      seedKeywords: [theme, 'lavish drinks', 'cocktails'],
+      targetPlatform: 'instagram',
+      count: 30
+    }
+  });
+
+  const hashtagResult = await context.runSkill('hashtag-generator', hashtagTask.skillParams);
+  await context.completeTask(hashtagTask.id, { output: hashtagResult });
+
+  // Step 2: Design visual (Task 2 - blockedBy Task 1)
+  const visualTask = await context.createTask({
+    taskListId,
+    content: 'Design Instagram visual using generated hashtags',
+    assignedTo: 'designer',
+    skill: 'dalle-generate',
+    skillParams: {
+      prompt: `${hashtagResult.topHashtags.join(' ')} - vibrant drinks, premium aesthetic`,
+      size: '1080x1080'
+    },
+    dependencies: [hashtagTask.id]
+  });
+
+  const visualResult = await context.runSkill('dalle-generate', visualTask.skillParams);
+  await context.completeTask(visualTask.id, { output: visualResult });
+
+  // Step 3: Upload to CDN (Task 3 - blockedBy Task 2)
+  const uploadTask = await context.createTask({
+    taskListId,
+    content: 'Upload visual to Cloudinary',
+    assignedTo: 'designer',
+    skill: 'cloudinary-upload',
+    skillParams: {
+      filePath: visualResult.url,
+      folder: `lavish/campaigns/${theme}`
+    },
+    dependencies: [visualTask.id]
+  });
+
+  const cdnResult = await context.runSkill('cloudinary-upload', uploadTask.skillParams);
+  await context.completeTask(uploadTask.id, { output: cdnResult });
+
+  // Step 4: Publish to Instagram (Task 4 - blockedBy Tasks 1 & 3)
+  const publishTask = await context.createTask({
+    taskListId,
+    content: 'Publish Instagram post',
+    assignedTo: 'social',
+    skill: 'meta-post',
+    skillParams: {
+      platform: 'instagram',
+      caption: `${hashtagResult.caption}\n\n${hashtagResult.hashtags.join(' ')}`,
+      mediaUrl: cdnResult.url,
+      scheduledTime: scheduledTime
+    },
+    dependencies: [hashtagTask.id, uploadTask.id]
+  });
+
+  const publishResult = await context.runSkill('meta-post', publishTask.skillParams);
+  await context.completeTask(publishTask.id, { output: publishResult });
+
+  return {
+    taskListId,
+    campaign: theme,
+    postId: publishResult.postId,
+    hashtags: hashtagResult.hashtags,
+    imageUrl: cdnResult.url
+  };
+}
+```
+
+**Usage:**
+
+```bash
+# CEO triggers campaign workflow
+clawdbot agent --agent ceo --message "Create Instagram campaign for 'Festival Season' scheduled for tomorrow 6PM"
+
+# The workflow executes sequentially:
+# 1. Strategist runs hashtag-generator → saves to task state
+# 2. Designer waits for hashtags → runs dalle-generate
+# 3. Designer uploads to Cloudinary → saves CDN URL
+# 4. Social Manager publishes post with all outputs combined
+```
+
+---
+
+### 2. Parallel Skill Execution: Independent Tasks
+
+**Use Case: Multi-Platform Content Blitz**
+
+Launch simultaneous content across Instagram, TikTok, and Facebook using different skills in parallel (no dependencies).
+
+**Task Graph (Parallel Execution):**
+
+```json
+{
+  "taskListId": "blitz_weekend_promotion",
+  "createdBy": "ceo",
+  "tasks": [
+    {
+      "id": "task_analytics_1",
+      "content": "Fetch TikTok analytics for last week",
+      "activeForm": "Analyzing TikTok performance data",
+      "status": "in_progress",
+      "assignedTo": "analyst",
+      "skill": "tiktok-analytics",
+      "skillParams": {
+        "videoId": "all",
+        "metrics": ["view_count", "like_count", "share_count"]
+      },
+      "dependencies": [],
+      "parallel": true
+    },
+    {
+      "id": "task_post_1",
+      "content": "Post Friday night promo to Instagram",
+      "activeForm": "Publishing Instagram Story with meta-post",
+      "status": "in_progress",
+      "assignedTo": "social",
+      "skill": "meta-post",
+      "skillParams": {
+        "platform": "instagram",
+        "caption": "Friday Night Vibes 🎉 Get your Lavish on!",
+        "mediaUrl": "https://cdn.lavish.nl/weekend-promo.jpg"
+      },
+      "dependencies": [],
+      "parallel": true
+    },
+    {
+      "id": "task_hashtags_1",
+      "content": "Generate hashtags for weekend nightlife campaign",
+      "activeForm": "Generating trending hashtags",
+      "status": "in_progress",
+      "assignedTo": "strategist",
+      "skill": "hashtag-generator",
+      "skillParams": {
+        "seedKeywords": ["weekend nightlife", "party drinks", "club vibes"],
+        "targetPlatform": "tiktok",
+        "count": 20
+      },
+      "dependencies": [],
+      "parallel": true
+    }
+  ]
+}
+```
+
+**Parallel Execution Code:**
+
+```javascript
+// ~/.clawdbot/agents/ceo/workflows/parallel-blitz.mjs
+export const meta = {
+  name: 'parallel-blitz',
+  description: 'Execute multiple skills simultaneously with no dependencies'
+}
+
+export async function run(context, { campaign }) {
+  const taskListId = `blitz_${campaign}_${Date.now()}`;
+
+  // Create all tasks upfront (no dependencies = parallel eligible)
+  const tasks = [
+    {
+      skill: 'tiktok-analytics',
+      assignedTo: 'analyst',
+      params: { videoId: 'all', metrics: ['view_count', 'like_count', 'share_count'] }
+    },
+    {
+      skill: 'meta-post',
+      assignedTo: 'social',
+      params: { platform: 'instagram', caption: 'Weekend Vibes!', mediaUrl: 'https://...' }
+    },
+    {
+      skill: 'hashtag-generator',
+      assignedTo: 'strategist',
+      params: { seedKeywords: ['weekend nightlife'], targetPlatform: 'tiktok', count: 20 }
+    }
+  ];
+
+  // Execute all skills in parallel using Promise.all
+  const results = await Promise.all(
+    tasks.map(async (task) => {
+      const taskRecord = await context.createTask({
+        taskListId,
+        content: `Run ${task.skill} skill`,
+        assignedTo: task.assignedTo,
+        skill: task.skill,
+        skillParams: task.params,
+        dependencies: [],  // No dependencies = parallel execution
+        parallel: true
+      });
+
+      // Execute skill
+      const result = await context.runSkill(task.skill, task.params);
+
+      // Complete task with output
+      await context.completeTask(taskRecord.id, { output: result });
+
+      return { task: task.skill, result };
+    })
+  );
+
+  return {
+    taskListId,
+    campaign,
+    executed: results.length,
+    outputs: results
+  };
+}
+```
+
+**Execution Timeline (Parallel):**
+
+```
+Time 0s:   All 3 tasks start simultaneously
+           ├─ tiktok-analytics (analyst)
+           ├─ meta-post (social)
+           └─ hashtag-generator (strategist)
+
+Time 2s:   meta-post completes (fastest)
+Time 4s:   hashtag-generator completes
+Time 7s:   tiktok-analytics completes (slowest)
+
+Total: 7 seconds (vs 13s sequential)
+```
+
+---
+
+### 3. Conditional Skill Chains: Dynamic Workflows
+
+**Use Case: Performance-Triggered Content Strategy**
+
+Analytics skill detects low engagement → triggers strategist skill → conditionally triggers content creation skills based on recommendations.
+
+**Conditional Task Graph:**
+
+```json
+{
+  "taskListId": "adaptive_strategy_week_12",
+  "createdBy": "ceo",
+  "tasks": [
+    {
+      "id": "task_monitor",
+      "content": "Monitor Instagram engagement rates",
+      "activeForm": "Checking Instagram Insights API",
+      "status": "completed",
+      "assignedTo": "analyst",
+      "skill": "meta-insights",
+      "skillParams": {
+        "platform": "instagram",
+        "metric": "engagement_rate",
+        "period": "week"
+      },
+      "dependencies": [],
+      "output": {
+        "engagement_rate": 2.1,
+        "threshold": 3.5,
+        "status": "below_target"
+      }
+    },
+    {
+      "id": "task_diagnose",
+      "content": "Analyze root cause of low engagement",
+      "activeForm": "Running strategist diagnosis",
+      "status": "completed",
+      "assignedTo": "strategist",
+      "skill": "engagement-analyzer",
+      "skillParams": {
+        "currentRate": "${task_monitor.output.engagement_rate}",
+        "targetRate": "${task_monitor.output.threshold}"
+      },
+      "dependencies": ["task_monitor"],
+      "condition": "${task_monitor.output.engagement_rate} < ${task_monitor.output.threshold}",
+      "output": {
+        "diagnosis": "Content frequency too low, hashtag diversity insufficient",
+        "recommendations": [
+          "increase_posting_frequency",
+          "diversify_hashtags",
+          "add_video_content"
+        ]
+      }
+    },
+    {
+      "id": "task_action_1",
+      "content": "Generate new diverse hashtag sets",
+      "activeForm": "Creating fresh hashtag strategy",
+      "status": "in_progress",
+      "assignedTo": "strategist",
+      "skill": "hashtag-generator",
+      "skillParams": {
+        "seedKeywords": ["cocktails", "nightlife", "bartending", "mixology", "summer"],
+        "targetPlatform": "instagram",
+        "count": 50,
+        "diversityMode": true
+      },
+      "dependencies": ["task_diagnose"],
+      "condition": "'diversify_hashtags' in ${task_diagnose.output.recommendations}"
+    },
+    {
+      "id": "task_action_2",
+      "content": "Create additional video content for TikTok",
+      "activeForm": "Scripting TikTok videos",
+      "status": "pending",
+      "assignedTo": "video",
+      "skill": "tiktok-script-generator",
+      "skillParams": {
+        "theme": "behind-the-scenes bartending",
+        "count": 5,
+        "duration": "15-30s"
+      },
+      "dependencies": ["task_diagnose"],
+      "condition": "'add_video_content' in ${task_diagnose.output.recommendations}"
+    }
+  ]
+}
+```
+
+**Conditional Execution Code:**
+
+```javascript
+// ~/.clawdbot/agents/ceo/workflows/adaptive-strategy.mjs
+export const meta = {
+  name: 'adaptive-strategy',
+  description: 'Monitor performance and trigger conditional skill chains'
+}
+
+export async function run(context, { platform, metric, threshold }) {
+  const taskListId = `adaptive_${platform}_${Date.now()}`;
+
+  // Task 1: Monitor metrics
+  const monitorTask = await context.createTask({
+    taskListId,
+    content: `Monitor ${platform} ${metric}`,
+    assignedTo: 'analyst',
+    skill: 'meta-insights',
+    skillParams: { platform, metric, period: 'week' }
+  });
+
+  const metrics = await context.runSkill('meta-insights', monitorTask.skillParams);
+  await context.completeTask(monitorTask.id, { output: metrics });
+
+  // Conditional: Only proceed if performance is below threshold
+  if (metrics.engagement_rate >= threshold) {
+    await context.logInfo(`Performance OK (${metrics.engagement_rate}% >= ${threshold}%)`);
+    return { status: 'no_action_needed', metrics };
+  }
+
+  // Task 2: Diagnose issues (conditional on low performance)
+  const diagnoseTask = await context.createTask({
+    taskListId,
+    content: 'Analyze root cause of low engagement',
+    assignedTo: 'strategist',
+    skill: 'engagement-analyzer',
+    skillParams: {
+      currentRate: metrics.engagement_rate,
+      targetRate: threshold,
+      platform: platform
+    },
+    dependencies: [monitorTask.id]
+  });
+
+  const diagnosis = await context.runSkill('engagement-analyzer', diagnoseTask.skillParams);
+  await context.completeTask(diagnoseTask.id, { output: diagnosis });
+
+  // Task 3+: Execute recommended actions (conditional chains)
+  const actionTasks = [];
+
+  if (diagnosis.recommendations.includes('diversify_hashtags')) {
+    const hashtagTask = await context.createTask({
+      taskListId,
+      content: 'Generate diverse hashtag strategy',
+      assignedTo: 'strategist',
+      skill: 'hashtag-generator',
+      skillParams: {
+        seedKeywords: ['cocktails', 'nightlife', 'bartending'],
+        targetPlatform: platform,
+        count: 50,
+        diversityMode: true
+      },
+      dependencies: [diagnoseTask.id]
+    });
+
+    const hashtags = await context.runSkill('hashtag-generator', hashtagTask.skillParams);
+    await context.completeTask(hashtagTask.id, { output: hashtags });
+    actionTasks.push({ action: 'hashtags', result: hashtags });
+  }
+
+  if (diagnosis.recommendations.includes('add_video_content')) {
+    const videoTask = await context.createTask({
+      taskListId,
+      content: 'Create TikTok video scripts',
+      assignedTo: 'video',
+      skill: 'tiktok-script-generator',
+      skillParams: {
+        theme: 'behind-the-scenes',
+        count: 5,
+        duration: '15-30s'
+      },
+      dependencies: [diagnoseTask.id]
+    });
+
+    const scripts = await context.runSkill('tiktok-script-generator', videoTask.skillParams);
+    await context.completeTask(videoTask.id, { output: scripts });
+    actionTasks.push({ action: 'video', result: scripts });
+  }
+
+  if (diagnosis.recommendations.includes('increase_posting_frequency')) {
+    await context.updateAgentConfig('social', {
+      posting_schedule: {
+        instagram: { frequency: '3x_daily' },
+        tiktok: { frequency: '2x_daily' }
+      }
+    });
+    actionTasks.push({ action: 'schedule_update', result: 'increased frequency' });
+  }
+
+  return {
+    taskListId,
+    status: 'actions_executed',
+    metrics,
+    diagnosis,
+    actions: actionTasks
+  };
+}
+```
+
+**Execution Flow:**
+
+```
+Start: Monitor engagement
+  ↓
+  engagement < threshold?
+  ├─ NO  → Exit (no action needed)
+  └─ YES → Diagnose issues
+            ↓
+            Recommendations?
+            ├─ diversify_hashtags → Run hashtag-generator
+            ├─ add_video_content → Run tiktok-script-generator
+            └─ increase_frequency → Update social agent config
+```
+
+---
+
+### 4. Skill + Task Persistence: State Management
+
+**Use Case: Multi-Day Campaign with Saved State**
+
+A week-long campaign requires skills to save outputs to task state so subsequent agents can access results days later.
+
+**Persistent Task List with CLAUDE_CODE_TASK_LIST_ID:**
+
+```bash
+# Day 1: CEO creates campaign task list
+export CLAUDE_CODE_TASK_LIST_ID="lavish_summer_campaign_2026"
+
+clawdbot agent --agent ceo --message "Create week-long summer campaign:
+1. Research trending summer hashtags (save to task state)
+2. Generate content calendar for 7 days (save to task state)
+3. Create visual assets (save CDN URLs to task state)
+
+Save all outputs to task list: $CLAUDE_CODE_TASK_LIST_ID"
+```
+
+**Task State Persistence Code:**
+
+```javascript
+// ~/.clawdbot/agents/ceo/workflows/persistent-campaign.mjs
+export const meta = {
+  name: 'persistent-campaign',
+  description: 'Multi-day campaign with persistent task state'
+}
+
+export async function run(context, { campaignName, duration }) {
+  // Use persistent task list ID from environment
+  const taskListId = process.env.CLAUDE_CODE_TASK_LIST_ID || `campaign_${campaignName}`;
+
+  // Day 1: Research phase
+  const researchTask = await context.createTask({
+    taskListId,
+    content: 'Research trending hashtags for campaign',
+    assignedTo: 'strategist',
+    skill: 'hashtag-generator',
+    skillParams: {
+      seedKeywords: [campaignName, 'summer', 'cocktails'],
+      targetPlatform: 'instagram',
+      count: 100
+    },
+    persist: true  // Save to disk, not just memory
+  });
+
+  const hashtags = await context.runSkill('hashtag-generator', researchTask.skillParams);
+
+  // Save to task state (persisted across sessions)
+  await context.saveTaskState(taskListId, researchTask.id, {
+    hashtags: hashtags.hashtags,
+    topHashtags: hashtags.topHashtags,
+    savedAt: new Date().toISOString()
+  });
+
+  await context.completeTask(researchTask.id, { output: hashtags });
+
+  // Day 2: Content planning (uses Day 1 state)
+  const planningTask = await context.createTask({
+    taskListId,
+    content: 'Generate 7-day content calendar',
+    assignedTo: 'pm',
+    skill: 'content-calendar-generator',
+    skillParams: {
+      duration: duration,
+      hashtags: '${task_research.output.topHashtags}',  // Reference saved state
+      platforms: ['instagram', 'tiktok', 'facebook']
+    },
+    dependencies: [researchTask.id],
+    persist: true
+  });
+
+  // Load hashtags from previous task state
+  const savedHashtags = await context.loadTaskState(taskListId, researchTask.id);
+
+  const calendar = await context.runSkill('content-calendar-generator', {
+    ...planningTask.skillParams,
+    hashtags: savedHashtags.topHashtags  // Use persisted data
+  });
+
+  await context.saveTaskState(taskListId, planningTask.id, {
+    calendar: calendar.posts,
+    savedAt: new Date().toISOString()
+  });
+
+  await context.completeTask(planningTask.id, { output: calendar });
+
+  return {
+    taskListId,
+    campaign: campaignName,
+    persistedTasks: [researchTask.id, planningTask.id],
+    message: 'Campaign state saved. Resume anytime with: export CLAUDE_CODE_TASK_LIST_ID=' + taskListId
+  };
+}
+```
+
+**State Access Across Sessions:**
+
+```javascript
+// ~/.clawdbot/agents/social/skills/resume-campaign.mjs
+export const meta = {
+  name: 'resume-campaign',
+  description: 'Resume multi-day campaign from saved task state'
+}
+
+export async function run(context, { taskListId, day }) {
+  // Load entire task list state
+  const taskList = await context.loadTaskList(taskListId);
+
+  // Access saved hashtags from Day 1
+  const hashtagTask = taskList.tasks.find(t => t.skill === 'hashtag-generator');
+  const savedHashtags = await context.loadTaskState(taskListId, hashtagTask.id);
+
+  // Access saved calendar from Day 2
+  const calendarTask = taskList.tasks.find(t => t.skill === 'content-calendar-generator');
+  const savedCalendar = await context.loadTaskState(taskListId, calendarTask.id);
+
+  // Get today's content from calendar
+  const todayContent = savedCalendar.calendar.find(post => post.day === day);
+
+  // Create new task for today's posting (uses saved state)
+  const postTask = await context.createTask({
+    taskListId,
+    content: `Post Day ${day} content to Instagram`,
+    assignedTo: 'social',
+    skill: 'meta-post',
+    skillParams: {
+      platform: 'instagram',
+      caption: `${todayContent.caption}\n\n${savedHashtags.topHashtags.slice(0, 10).join(' ')}`,
+      mediaUrl: todayContent.imageUrl
+    },
+    dependencies: [calendarTask.id]
+  });
+
+  const result = await context.runSkill('meta-post', postTask.skillParams);
+  await context.completeTask(postTask.id, { output: result });
+
+  return {
+    taskListId,
+    day,
+    posted: result.postId,
+    usedHashtags: savedHashtags.topHashtags.slice(0, 10),
+    usedCalendar: todayContent
+  };
+}
+```
+
+**Day-by-Day Execution:**
+
+```bash
+# Day 1: Create campaign (saves state)
+export CLAUDE_CODE_TASK_LIST_ID="lavish_summer_2026"
+clawdbot agent --agent ceo --message "Start summer campaign"
+
+# Day 2: Resume campaign (loads Day 1 state)
+export CLAUDE_CODE_TASK_LIST_ID="lavish_summer_2026"
+clawdbot agent --agent social --message "Post today's content using saved campaign state"
+
+# Day 3-7: Continue (all access same persistent task list)
+export CLAUDE_CODE_TASK_LIST_ID="lavish_summer_2026"
+clawdbot agent --agent social --message "Resume campaign, post Day 3 content"
+```
+
+**Persistent State Storage:**
+
+```
+~/.clawdbot/task-lists/
+  └── lavish_summer_2026/
+      ├── task-list.json           # Task graph metadata
+      ├── task_research.state.json # Saved hashtags
+      ├── task_planning.state.json # Saved calendar
+      └── task_post_day*.state.json # Daily post results
+```
+
+---
+
+### Best Practices: Skill Orchestration
+
+**1. Dependency Management:**
+```javascript
+// Good: Explicit dependencies
+{
+  dependencies: ['task_1', 'task_2'],  // Wait for both
+  condition: '${task_1.output.success} === true'
+}
+
+// Bad: Implicit assumptions
+{
+  // Assumes task_1 completed (race condition risk)
+}
+```
+
+**2. Error Handling:**
+```javascript
+// Skill execution with fallback
+try {
+  const result = await context.runSkill('meta-post', params);
+  await context.completeTask(taskId, { output: result });
+} catch (error) {
+  // Log error and create remediation task
+  await context.failTask(taskId, { error: error.message });
+  await context.createTask({
+    content: 'Manual review required for failed post',
+    assignedTo: 'ceo',
+    priority: 'high',
+    dependencies: [taskId]
+  });
+}
+```
+
+**3. State Cleanup:**
+```javascript
+// Clean up old campaign states (weekly)
+export async function cleanupOldCampaigns(context, { olderThanDays = 30 }) {
+  const taskLists = await context.listTaskLists();
+
+  for (const list of taskLists) {
+    const age = Date.now() - new Date(list.createdAt).getTime();
+    const daysOld = age / (1000 * 60 * 60 * 24);
+
+    if (daysOld > olderThanDays && list.status === 'completed') {
+      await context.archiveTaskList(list.id);
+    }
+  }
+}
+```
+
+**4. Monitoring & Alerts:**
+```javascript
+// Alert on task failures
+export async function monitorTasks(context, { taskListId }) {
+  const tasks = await context.getTaskList(taskListId);
+  const failedTasks = tasks.filter(t => t.status === 'failed');
+
+  if (failedTasks.length > 0) {
+    await context.runSkill('slack-alert', {
+      channel: '#lavish-alerts',
+      message: `⚠️ ${failedTasks.length} tasks failed in ${taskListId}`,
+      level: 'error'
+    });
+  }
+}
+```
+
+---
+
 ## 🤖 AI Model Provider Strategy
 
 ### Opties: Claude vs MiniMax vs z.ai vs Ollama

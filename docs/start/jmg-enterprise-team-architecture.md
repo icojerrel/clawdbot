@@ -1129,6 +1129,526 @@ export async function run(context) {
 
 ---
 
+## Agent Swarm Coordination
+
+De 10-agent architectuur van JMG Content Group maakt gebruik van geavanceerde task-based orchestration om complexe campagnes te coördineren. Dit systeem stelt agents in staat om parallel te werken, dependencies te beheren en multi-layer workflows uit te voeren.
+
+### Task-Based Workflow Example
+
+**Scenario:** Launch van nieuwe cocktail "Tropical Sunset" voor premium client.
+
+De CEO ontvangt het verzoek en creëert een master task list die de hele campagne orkestreert:
+
+```javascript
+// CEO creates master campaign task list
+const campaignTaskList = {
+  id: "tropical-sunset-launch-2026-01",
+  name: "Tropical Sunset Product Launch Campaign",
+  created: "2026-01-25T09:00:00Z",
+  owner: "ceo",
+
+  tasks: [
+    {
+      id: "task-001",
+      title: "Market research en competitor analysis",
+      assignee: "strategist",
+      status: "in_progress",
+      priority: "high",
+      dependencies: [],
+      deliverables: ["market-report.md", "competitor-matrix.json"],
+      estimatedHours: 4
+    },
+    {
+      id: "task-002",
+      title: "SEO keyword strategy voor cocktail launch",
+      assignee: "seo",
+      status: "pending",
+      priority: "high",
+      dependencies: ["task-001"],
+      deliverables: ["keyword-strategy.json"],
+      estimatedHours: 2
+    },
+    {
+      id: "task-003",
+      title: "Hero blog post: 'Perfect Tropical Sunset at Home'",
+      assignee: "copywriter",
+      status: "pending",
+      priority: "critical",
+      dependencies: ["task-001", "task-002"],
+      deliverables: ["blog-post-2500-words.md"],
+      estimatedHours: 6
+    },
+    {
+      id: "task-004",
+      title: "Product photography art direction",
+      assignee: "designer",
+      status: "pending",
+      priority: "high",
+      dependencies: ["task-001"],
+      deliverables: ["photo-brief.md", "mockups.png"],
+      estimatedHours: 3
+    },
+    {
+      id: "task-005",
+      title: "30-second Instagram Reel script",
+      assignee: "video",
+      status: "pending",
+      priority: "high",
+      dependencies: ["task-001", "task-004"],
+      deliverables: ["reel-script.md", "shot-list.json"],
+      estimatedHours: 3
+    },
+    {
+      id: "task-006",
+      title: "Social media blitz (25 posts, 3 platforms)",
+      assignee: "social",
+      status: "pending",
+      priority: "critical",
+      dependencies: ["task-003", "task-004"],
+      deliverables: ["social-calendar.json", "posts/*.md"],
+      estimatedHours: 5
+    },
+    {
+      id: "task-007",
+      title: "Email campaign: 3-part launch sequence",
+      assignee: "email",
+      status: "pending",
+      priority: "medium",
+      dependencies: ["task-003"],
+      deliverables: ["email-sequence.json"],
+      estimatedHours: 4
+    },
+    {
+      id: "task-008",
+      title: "Campaign performance dashboard setup",
+      assignee: "analyst",
+      status: "pending",
+      priority: "medium",
+      dependencies: [],
+      deliverables: ["dashboard-config.json"],
+      estimatedHours: 2
+    }
+  ]
+}
+```
+
+### Dependency Graph Visualization
+
+Het dependency systeem zorgt ervoor dat agents in de juiste volgorde werken, met parallel execution waar mogelijk:
+
+```json
+{
+  "campaign": "tropical-sunset-launch",
+  "executionGraph": {
+    "layer1_foundation": {
+      "description": "Research phase - can run in parallel",
+      "tasks": [
+        {
+          "id": "task-001",
+          "agent": "strategist",
+          "blockedBy": [],
+          "blocks": ["task-002", "task-003", "task-004", "task-005"]
+        },
+        {
+          "id": "task-008",
+          "agent": "analyst",
+          "blockedBy": [],
+          "blocks": []
+        }
+      ],
+      "estimatedDuration": "4 hours",
+      "canRunParallel": true
+    },
+
+    "layer2_content_strategy": {
+      "description": "SEO and creative direction - depends on research",
+      "tasks": [
+        {
+          "id": "task-002",
+          "agent": "seo",
+          "blockedBy": ["task-001"],
+          "blocks": ["task-003"]
+        },
+        {
+          "id": "task-004",
+          "agent": "designer",
+          "blockedBy": ["task-001"],
+          "blocks": ["task-005", "task-006"]
+        }
+      ],
+      "estimatedDuration": "3 hours",
+      "canRunParallel": true
+    },
+
+    "layer3_content_creation": {
+      "description": "Core content assets - parallel execution",
+      "tasks": [
+        {
+          "id": "task-003",
+          "agent": "copywriter",
+          "blockedBy": ["task-001", "task-002"],
+          "blocks": ["task-006", "task-007"]
+        },
+        {
+          "id": "task-005",
+          "agent": "video",
+          "blockedBy": ["task-001", "task-004"],
+          "blocks": []
+        }
+      ],
+      "estimatedDuration": "6 hours",
+      "canRunParallel": true
+    },
+
+    "layer4_distribution": {
+      "description": "Multi-channel distribution - depends on content",
+      "tasks": [
+        {
+          "id": "task-006",
+          "agent": "social",
+          "blockedBy": ["task-003", "task-004"],
+          "blocks": []
+        },
+        {
+          "id": "task-007",
+          "agent": "email",
+          "blockedBy": ["task-003"],
+          "blocks": []
+        }
+      ],
+      "estimatedDuration": "5 hours",
+      "canRunParallel": true
+    }
+  },
+
+  "criticalPath": ["task-001", "task-002", "task-003", "task-006"],
+  "totalEstimatedTime": "18 hours (sequential)",
+  "parallelOptimizedTime": "13 hours (with coordination)"
+}
+```
+
+### Parallel Execution Example
+
+Drie agents werken simultaan aan complementaire taken zodra dependencies zijn opgelost:
+
+```bash
+# 10:00 - Layer 2 starts (research completed)
+
+# Designer creates visual assets (independent path)
+CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent designer --message "
+  Execute task-004: Create product photography art direction.
+  Context: Tropical Sunset cocktail launch.
+  Input: Use market research from content-production/research/tropical-sunset/
+  Output: Save to content-production/assets/tropical-sunset/
+
+  Mark task-004 as in_progress, then completed when done."
+
+# SEO specialist optimizes keyword strategy (independent path)
+CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent seo --message "
+  Execute task-002: Develop SEO keyword strategy.
+  Context: Launch campaign for new cocktail product.
+  Input: Market report from Strategist (task-001).
+  Output: keyword-strategy.json
+
+  Focus on: cocktail recipes, home bartending, summer drinks.
+  Mark task-002 as in_progress, then completed."
+
+# Analyst sets up tracking (no dependencies)
+CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent analyst --message "
+  Execute task-008: Setup campaign performance dashboard.
+  Configure tracking for:
+  - Blog traffic & engagement
+  - Social media reach/engagement
+  - Email open/click rates
+  - Conversion tracking
+
+  Mark task-008 completed when dashboard is live."
+```
+
+**Resultaat:** Drie agents werken parallel, elk in hun eigen domein, zonder te wachten op elkaar. De CEO's task orchestration zorgt ervoor dat downstream tasks (zoals Copywriter's blog post) pas starten wanneer alle dependencies (research + SEO keywords) klaar zijn.
+
+### Multi-Layer Orchestration
+
+De CEO kan sub-campaigns delegeren aan specialist agents, die op hun beurt weer sub-tasks creëren. Dit creëert een 3-layer hiërarchie:
+
+**Layer 1: CEO Strategic Orchestration**
+```javascript
+// CEO master task
+{
+  id: "campaign-master",
+  agent: "ceo",
+  task: "Launch Tropical Sunset product line",
+  subCampaigns: [
+    "social-media-blitz",
+    "influencer-outreach",
+    "email-nurture-sequence"
+  ]
+}
+```
+
+**Layer 2: Specialist Campaign Management**
+```javascript
+// Social Media Manager takes ownership of social blitz
+// Creates their own task list with sub-tasks
+CLAUDE_CODE_TASK_LIST_ID=social-media-blitz-2026-01
+
+{
+  id: "social-media-blitz-2026-01",
+  parentCampaign: "tropical-sunset-launch-2026-01",
+  owner: "social",
+
+  tasks: [
+    {
+      id: "social-001",
+      title: "Instagram carousel (10 slides): Recipe breakdown",
+      assignee: "social",
+      status: "in_progress",
+      deliverables: ["instagram-carousel.json"]
+    },
+    {
+      id: "social-002",
+      title: "Twitter thread (15 tweets): History of tropical cocktails",
+      assignee: "social",
+      status: "pending",
+      deliverables: ["twitter-thread.md"]
+    },
+    {
+      id: "social-003",
+      title: "LinkedIn thought leadership: Premium cocktail market trends",
+      assignee: "social",
+      status: "pending",
+      deliverables: ["linkedin-post.md"]
+    },
+    {
+      id: "social-004",
+      title: "TikTok hooks: 5 viral-worthy recipe variations",
+      assignee: "social",
+      status: "pending",
+      deliverables: ["tiktok-scripts.json"]
+    }
+  ]
+}
+```
+
+**Layer 3: Execution-Level Sub-Tasks**
+```javascript
+// Social Manager further breaks down Instagram carousel into granular tasks
+CLAUDE_CODE_TASK_LIST_ID=instagram-carousel-tropical-2026-01
+
+{
+  id: "instagram-carousel-tropical-2026-01",
+  parentTask: "social-001",
+  owner: "social",
+
+  subtasks: [
+    {
+      id: "ig-001",
+      title: "Write copy for slide 1 (hook)",
+      status: "completed"
+    },
+    {
+      id: "ig-002",
+      title: "Request ingredient photos from Designer",
+      status: "completed",
+      collaboration: {
+        agent: "designer",
+        requestedAssets: ["rum-bottle.png", "tropical-fruits.png"]
+      }
+    },
+    {
+      id: "ig-003",
+      title: "Write recipe steps (slides 2-9)",
+      status: "in_progress"
+    },
+    {
+      id: "ig-004",
+      title: "Write CTA slide (slide 10)",
+      status: "pending"
+    },
+    {
+      id: "ig-005",
+      title: "Hashtag research (30 relevant tags)",
+      status: "completed"
+    }
+  ]
+}
+```
+
+Deze 3-layer hiërarchie zorgt voor:
+- **Strategic oversight** (CEO ziet campaign-level voortgang)
+- **Specialist autonomy** (Social Manager beheert eigen workflow)
+- **Granular execution** (Detailed sub-tasks voor quality control)
+
+### Task Persistence and Cross-Agent Coordination
+
+Het `CLAUDE_CODE_TASK_LIST_ID` systeem maakt persistente task tracking mogelijk over meerdere agent sessions:
+
+**Scenario: Handoff van Copywriter naar Social Manager**
+
+```bash
+# 14:00 - Copywriter completes blog post
+CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent copywriter --message "
+  Task task-003 is completed.
+  Blog post saved to: content-production/published/blogs/tropical-sunset-recipe.md
+
+  Notify Social Manager: Blog post ready for social promotion.
+  Update task status to completed and unblock task-006."
+
+# System automatically tracks:
+# - task-003 status: completed ✓
+# - task-006 dependencies satisfied ✓
+# - Social Manager can now start
+```
+
+```bash
+# 14:05 - Social Manager automatically triggered (dependency resolved)
+CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent social --message "
+  Task task-006 dependencies are satisfied. Begin execution:
+
+  1. Read blog post from content-production/published/blogs/tropical-sunset-recipe.md
+  2. Extract key quotes and insights
+  3. Create 25 social posts across Instagram, Twitter, LinkedIn
+  4. Schedule posts via content calendar
+  5. Mark task-006 completed
+
+  Reference graphics from Designer (task-004 deliverables)."
+```
+
+**Cross-Agent Task Visibility**
+
+Elk agent kan de shared task list lezen om context te krijgen:
+
+```javascript
+// ~/.clawdbot/skills/read-campaign-tasks.mjs
+export const meta = {
+  name: 'read-campaign-tasks',
+  description: 'Read shared campaign task list for coordination'
+}
+
+export async function run(context, { campaignId }) {
+  const taskListPath = `~/.clawdbot/campaigns/${campaignId}/tasks.json`;
+  const tasks = await context.readFile(taskListPath);
+
+  // Filter for relevant tasks
+  const myTasks = tasks.filter(t => t.assignee === context.agentName);
+  const blockers = tasks.filter(t =>
+    myTasks.some(mt => mt.dependencies.includes(t.id)) &&
+    t.status !== 'completed'
+  );
+
+  return {
+    myTasks,
+    blockers,
+    readyToStart: myTasks.filter(t =>
+      t.status === 'pending' &&
+      t.dependencies.every(dep =>
+        tasks.find(task => task.id === dep)?.status === 'completed'
+      )
+    )
+  };
+}
+```
+
+**Project Manager Monitoring**
+
+De PM agent heeft een bird's-eye view van alle campaign tasks:
+
+```bash
+# Project Manager daily standup (automated cron)
+CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent pm --message "
+  Generate standup report voor tropical-sunset-launch campaign:
+
+  1. Tasks completed since yesterday
+  2. Tasks currently in progress
+  3. Blocked tasks (dependencies not met)
+  4. Tasks at risk (approaching deadline)
+  5. Overall campaign health score
+
+  Post report to Slack #project-management
+  Alert CEO if critical path is blocked."
+```
+
+**Voorbeeld Output:**
+
+```markdown
+# Tropical Sunset Launch - Standup 2026-01-25
+
+## ✅ Completed (5/8 tasks)
+- task-001: Market research (Strategist) ✓
+- task-002: SEO strategy (SEO) ✓
+- task-004: Visual assets (Designer) ✓
+- task-008: Analytics dashboard (Analyst) ✓
+- task-003: Hero blog post (Copywriter) ✓
+
+## 🏃 In Progress (2/8 tasks)
+- task-006: Social media blitz (Social) - 60% complete
+- task-005: Video script (Video) - 40% complete
+
+## ⏸️ Blocked (0 tasks)
+None
+
+## ⏰ Pending (1/8 tasks)
+- task-007: Email sequence (Email) - waiting for task-003 ✓ (can start now)
+
+## 📊 Campaign Health
+- On track: 87%
+- Estimated completion: 2026-01-26 16:00
+- Critical path status: GREEN
+- Budget utilization: 42% (API costs)
+
+## 🎯 Next 24 Hours
+1. Social Manager: Complete social calendar
+2. Video Creator: Finalize Reel script
+3. Email Specialist: Start email sequence
+4. CEO: Final quality review before launch
+
+## 🚨 Alerts
+None - all dependencies resolved, no blockers detected.
+```
+
+### Practical Implementation
+
+**Setup voor task-based coordination:**
+
+```bash
+# 1. CEO initializes campaign
+mkdir -p ~/.clawdbot/campaigns/tropical-sunset-launch-2026-01
+
+# 2. Create master task list
+cat > ~/.clawdbot/campaigns/tropical-sunset-launch-2026-01/tasks.json << 'EOF'
+{
+  "campaign": "tropical-sunset-launch-2026-01",
+  "tasks": [ /* task definitions from above */ ]
+}
+EOF
+
+# 3. Set environment variable voor alle agents
+echo "export CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01" >> ~/.clawdbot/.env
+
+# 4. Agents kunnen nu tasks oppakken:
+clawdbot agent --agent strategist --message "Check task list, start first available task"
+
+# 5. PM monitoring (cron job)
+# Runs elke 2 uur tijdens werkdag
+0 */2 9-18 * * CLAUDE_CODE_TASK_LIST_ID=tropical-sunset-launch-2026-01 \
+  clawdbot agent --agent pm --message "Generate campaign status update"
+```
+
+Dit systeem creëert een volledig gecoördineerd agent swarm dat:
+- **Parallel werkt** waar mogelijk (vermindert doorlooptijd met 30-40%)
+- **Dependencies respecteert** (voorkomt verkeerde volgorde)
+- **Transparantie biedt** (elk agent ziet campaign status)
+- **Schaalbaar is** (voeg agents toe zonder herconfiguratie)
+- **Persistent is** (task state blijft behouden over sessions)
+
+---
+
 ## Deployment Checklist
 
 ### Initiële Setup (Eenmalig)

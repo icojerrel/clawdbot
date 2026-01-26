@@ -1762,6 +1762,527 @@ EOF
 
 ---
 
+## Task Coordination Timeline
+
+This section provides a structured view of task dependencies, parallel execution opportunities, agent assignments, and critical checkpoints across the 8-week deployment.
+
+### Week-by-Week Dependency Graph
+
+```json
+{
+  "week0": {
+    "name": "Pre-Launch Setup",
+    "duration": "3-5 days",
+    "tasks": {
+      "1": "Provision Hetzner VPS and configure firewall",
+      "2": "Install Node.js, Clawdbot, and system dependencies",
+      "3": "Acquire all API keys (z.ai, MiniMax, Meta, TikTok, etc.)",
+      "4": "Configure Slack workspace and create 12 channels",
+      "5": "Configure Telegram bot and test messaging",
+      "6": "Deploy base Clawdbot configuration",
+      "7": "Create all 10 agent workspaces with directory structure",
+      "8": "Start gateway and verify health checks"
+    },
+    "parallel": [["1"], ["2"], ["3", "4", "5"], ["6", "7"], ["8"]],
+    "dependencies": [],
+    "blocks": ["week1"],
+    "checkpoints": {
+      "critical": "Gateway running and health checks passing",
+      "validation": "All 10 agent workspaces created, all API keys verified",
+      "blocker": "Cannot proceed to Week 1 without working gateway and valid API keys"
+    },
+    "agents": {
+      "infrastructure": ["DevOps (manual setup)"],
+      "validation": ["CEO agent (health check coordination)"]
+    }
+  },
+
+  "week1": {
+    "name": "Agent Onboarding & Skills Setup",
+    "duration": "7 days",
+    "tasks": {
+      "1": "Write AGENTS.md, SOUL.md, TOOLS.md for all 10 agents",
+      "2": "Deploy shared skills (meta-post, tiktok-analytics, ga4, ahrefs, mailchimp)",
+      "3": "Deploy agent-specific skills (hashtag-generator, brand-check, festival-calendar)",
+      "4": "Configure social media audit automation (Instagram, TikTok, Facebook)",
+      "5": "Run competitor analysis (5 Dutch cocktail brands)",
+      "6": "Document Lavish brand guidelines in asset library",
+      "7": "Test all skills with dummy data",
+      "8": "Verify Slack channel routing for all agents"
+    },
+    "parallel": [["1"], ["2", "3"], ["4", "5", "6"], ["7"], ["8"]],
+    "dependencies": ["week0"],
+    "blocks": ["week2"],
+    "checkpoints": {
+      "critical": "All agents can communicate via Slack and execute skills",
+      "validation": "Social media audit complete, competitor analysis documented",
+      "blocker": "Cannot start content production without working skills and brand guidelines"
+    },
+    "agents": {
+      "strategist": ["Social media audit (task 4)", "Competitor analysis (task 5)"],
+      "designer": ["Brand guidelines documentation (task 6)"],
+      "pm": ["Agent workspace setup coordination (task 1)", "Skill deployment (tasks 2-3)"],
+      "ceo": ["Overall validation and approval (task 8)"]
+    }
+  },
+
+  "week2": {
+    "name": "Content Calendar & Initial Production",
+    "duration": "7 days",
+    "tasks": {
+      "1": "Create Week 2 content calendar (21 IG, 14 TikTok, 14 FB posts)",
+      "2": "Set up daily automation script (06:00 daily triggers)",
+      "3": "Configure asset library with brand templates",
+      "4": "Produce first batch: 3 Instagram posts, 2 TikTok videos, 2 blog drafts",
+      "5": "Link Meta Business Suite for Instagram/Facebook posting",
+      "6": "Configure TikTok Business API for video uploads",
+      "7": "Deploy GA4, Meta Pixel, TikTok tracking pixels on drinklavish.nl",
+      "8": "Launch first newsletter to 8K subscribers",
+      "9": "Monitor first 48 hours of content performance"
+    },
+    "parallel": [["1"], ["2", "3"], ["4"], ["5", "6", "7"], ["8"], ["9"]],
+    "dependencies": ["week1.4", "week1.6"],
+    "blocks": ["week3"],
+    "checkpoints": {
+      "critical": "Content calendar approved, first posts published successfully",
+      "validation": "Analytics tracking live, engagement data flowing in",
+      "blocker": "Cannot optimize without baseline performance data"
+    },
+    "agents": {
+      "strategist": ["Content calendar planning (task 1)"],
+      "copywriter": ["Blog drafts (task 4)"],
+      "social": ["Instagram/TikTok/Facebook posts (task 4)", "Social platform linking (tasks 5-6)"],
+      "designer": ["Asset templates (task 3)", "Visual content for posts (task 4)"],
+      "email": ["Newsletter production (task 8)"],
+      "analyst": ["Analytics setup (task 7)", "Performance monitoring (task 9)"],
+      "pm": ["Daily automation deployment (task 2)", "Timeline coordination"]
+    }
+  },
+
+  "week3": {
+    "name": "Optimization Phase 1",
+    "duration": "7 days",
+    "tasks": {
+      "1": "Analyze Week 2 performance data across all platforms",
+      "2": "Set up daily analytics dashboard automation",
+      "3": "Deploy weekly strategy review automation (Monday 09:00)",
+      "4": "Launch A/B Test 1: Instagram post timing (09:00 vs 15:00)",
+      "5": "Launch A/B Test 2: TikTok thumbnail styles (product vs face)",
+      "6": "Scale content to 1.5x volume (IG: 3→4/day, TikTok: 2→3/day)",
+      "7": "Identify top-performing content themes for replication",
+      "8": "Adjust hashtag strategy based on engagement data"
+    },
+    "parallel": [["1"], ["2", "3"], ["4", "5"], ["6"], ["7", "8"]],
+    "dependencies": ["week2.9"],
+    "blocks": ["week4"],
+    "checkpoints": {
+      "critical": "A/B testing framework operational, performance trends identified",
+      "validation": "Content volume scaled successfully without quality drop",
+      "blocker": "Must have statistically significant A/B test results before Week 4 optimizations"
+    },
+    "agents": {
+      "analyst": ["Performance analysis (task 1)", "Dashboard automation (task 2)", "A/B test tracking (tasks 4-5)"],
+      "strategist": ["Weekly review automation (task 3)", "Theme analysis (task 7)", "Hashtag optimization (task 8)"],
+      "social": ["Scaled content production (task 6)"],
+      "copywriter": ["Scaled blog production (task 6)"],
+      "designer": ["Scaled visual assets (task 6)"],
+      "pm": ["Workflow optimization for 1.5x scale"]
+    }
+  },
+
+  "week4": {
+    "name": "Optimization Phase 2 & Scaling",
+    "duration": "7 days",
+    "tasks": {
+      "1": "Implement A/B test winners from Week 3",
+      "2": "Launch A/B Test 3: Email subject lines (emoji vs no-emoji)",
+      "3": "Launch A/B Test 4: Facebook copy length (short vs long)",
+      "4": "Scale content to 2x volume (IG: 4→5/day, TikTok: 3→4/day)",
+      "5": "Deploy batch content generator (Sunday 20:00 automation)",
+      "6": "Establish festival season prep workflow",
+      "7": "Create Pinkpop campaign timeline (T-14 to T+3 days)",
+      "8": "Monitor Facebook engagement: target 50+ likes/post by end of week"
+    },
+    "parallel": [["1"], ["2", "3"], ["4", "5"], ["6", "7"], ["8"]],
+    "dependencies": ["week3.4", "week3.5"],
+    "blocks": ["week5"],
+    "checkpoints": {
+      "critical": "Content scaled to 2x successfully, festival campaign planned",
+      "validation": "Facebook engagement showing upward trend (>50 likes/post)",
+      "blocker": "Must achieve 2x scale before festival season begins in Week 5"
+    },
+    "agents": {
+      "social": ["A/B winner implementation (task 1)", "Scaled production (task 4)"],
+      "email": ["Email A/B testing (task 2)"],
+      "copywriter": ["Facebook copy testing (task 3)"],
+      "strategist": ["Festival workflow (task 6)", "Pinkpop planning (task 7)"],
+      "analyst": ["Facebook engagement tracking (task 8)"],
+      "pm": ["Batch automation deployment (task 5)", "Scale coordination"]
+    }
+  },
+
+  "week5": {
+    "name": "Festival Campaign Launch (Pinkpop Prep)",
+    "duration": "7 days",
+    "tasks": {
+      "1": "T-14: Publish 'Ultimate Pinkpop Survival Guide' blog",
+      "2": "T-14: Launch Pinkpop ticket giveaway on Instagram",
+      "3": "T-14: Send newsletter 'Pinkpop is Coming - Win Tickets!'",
+      "4": "T-14: Start TikTok 14-day countdown series",
+      "5": "T-7: Begin daily Instagram Stories countdown (7 stories/day)",
+      "6": "T-7: Create Facebook Event 'Lavish @ Pinkpop Meetup'",
+      "7": "T-7: Publish 'Festival packing essentials' TikTok video",
+      "8": "Monitor giveaway engagement and adjust festival strategy"
+    },
+    "parallel": [["1", "2", "3", "4"], ["5", "6", "7"], ["8"]],
+    "dependencies": ["week4.7"],
+    "blocks": ["week6"],
+    "checkpoints": {
+      "critical": "Pinkpop campaign launched, giveaway driving engagement",
+      "validation": "Daily countdown content automated, event page live",
+      "blocker": "Must have strong pre-festival momentum before Week 6 live coverage"
+    },
+    "agents": {
+      "copywriter": ["Blog post (task 1)"],
+      "social": ["Giveaway launch (task 2)", "Daily Stories (task 5)", "FB Event (task 6)"],
+      "email": ["Newsletter (task 3)"],
+      "video": ["Countdown series (task 4)", "Packing video (task 7)"],
+      "analyst": ["Giveaway metrics (task 8)"],
+      "strategist": ["Campaign adjustment (task 8)"]
+    }
+  },
+
+  "week6": {
+    "name": "Festival Live Coverage (Pinkpop Weekend)",
+    "duration": "7 days",
+    "tasks": {
+      "1": "T-3: Publish 'Festival outfit inspo' Instagram post",
+      "2": "T-3: Publish 'What's in my festival bag' TikTok",
+      "3": "T-1: Final hype post 'See you tomorrow at Pinkpop!'",
+      "4": "Festival Days 1-3: Live Instagram Stories (45 total, 15/day)",
+      "5": "Festival Days 1-3: Real-time TikTok videos (12 total, 4/day)",
+      "6": "Festival Days 1-3: Facebook photo albums (3 albums, 1/day)",
+      "7": "T+1: Publish festival recap carousel on Instagram",
+      "8": "T+1: Publish festival highlight reel on TikTok",
+      "9": "T+1: Send 'Pinkpop Recap' newsletter with exclusive offer",
+      "10": "T+3: Analyze campaign performance and document learnings"
+    },
+    "parallel": [["1", "2"], ["3"], ["4", "5", "6"], ["7", "8", "9"], ["10"]],
+    "dependencies": ["week5.8"],
+    "blocks": ["week7"],
+    "checkpoints": {
+      "critical": "Live festival coverage executed, real-time engagement monitored",
+      "validation": "Viral content identified (target: 1 TikTok >100K views)",
+      "blocker": "Must capture learnings before next festival campaign"
+    },
+    "agents": {
+      "social": ["Pre-festival posts (tasks 1-3)", "Live Stories (task 4)", "Photo albums (task 6)", "Recap carousel (task 7)"],
+      "video": ["Pre-festival TikTok (task 2)", "Live TikToks (task 5)", "Highlight reel (task 8)"],
+      "email": ["Recap newsletter (task 9)"],
+      "analyst": ["Real-time metrics monitoring (during festival)", "Campaign analysis (task 10)"],
+      "strategist": ["Learnings documentation (task 10)"],
+      "ceo": ["Live coordination and client updates"]
+    }
+  },
+
+  "week7": {
+    "name": "Goal Achievement Sprint 1",
+    "duration": "7 days",
+    "tasks": {
+      "1": "Analyze Pinkpop campaign ROI and apply learnings",
+      "2": "Replicate top-performing Pinkpop content formats",
+      "3": "Plan next festival campaign (Lowlands/Mysteryland)",
+      "4": "Facebook engagement push: target 250+ likes/post",
+      "5": "Instagram growth push: target 200+ followers this week",
+      "6": "Launch user-generated content campaign (#LavishFestivalMoments)",
+      "7": "Optimize email list growth tactics (target 10K subscribers)",
+      "8": "Run weekly goal tracker report and share with client"
+    },
+    "parallel": [["1"], ["2", "3"], ["4", "5"], ["6"], ["7"], ["8"]],
+    "dependencies": ["week6.10"],
+    "blocks": ["week8"],
+    "checkpoints": {
+      "critical": "Facebook engagement >250 likes/post, Instagram >6K followers",
+      "validation": "Next festival campaign planned, UGC momentum building",
+      "blocker": "Must show strong progress toward 500 likes/post goal before final week"
+    },
+    "agents": {
+      "analyst": ["ROI analysis (task 1)", "Goal tracking (task 8)"],
+      "social": ["Content replication (task 2)", "FB push (task 4)", "IG push (task 5)", "UGC campaign (task 6)"],
+      "strategist": ["Next festival planning (task 3)"],
+      "email": ["List growth tactics (task 7)"],
+      "ceo": ["Client reporting (task 8)"]
+    }
+  },
+
+  "week8": {
+    "name": "Goal Achievement & Final Report",
+    "duration": "7 days",
+    "tasks": {
+      "1": "Final push: Facebook engagement to 400-500+ likes/post",
+      "2": "Final push: Instagram to 6800+ followers",
+      "3": "Final push: Newsletter to 12K+ subscribers",
+      "4": "Verify TikTok viral goal (1 video >100K views)",
+      "5": "Compile all 8-week performance data",
+      "6": "Generate comprehensive final report with ROI analysis",
+      "7": "Create success highlights video/presentation for client",
+      "8": "Conduct client feedback session",
+      "9": "Plan next phase (Week 9-12) based on pilot results",
+      "10": "Archive pilot data and optimize ongoing operations"
+    },
+    "parallel": [["1", "2", "3"], ["4"], ["5"], ["6", "7"], ["8"], ["9", "10"]],
+    "dependencies": ["week7.8"],
+    "blocks": ["post-pilot"],
+    "checkpoints": {
+      "critical": "All 8-week goals achieved or >80% complete",
+      "validation": "Final report delivered, client satisfaction >4/5",
+      "blocker": "Must have complete data set and client approval before scaling"
+    },
+    "agents": {
+      "social": ["Final engagement pushes (tasks 1-2)"],
+      "email": ["Final subscriber push (task 3)"],
+      "video": ["Viral verification (task 4)"],
+      "analyst": ["Data compilation (task 5)", "Final report (task 6)"],
+      "designer": ["Success presentation (task 7)"],
+      "ceo": ["Client session (task 8)", "Next phase planning (task 9)"],
+      "pm": ["Data archival (task 10)", "Ongoing ops optimization (task 10)"]
+    }
+  }
+}
+```
+
+### Parallel Execution Windows
+
+The following tasks can run simultaneously to accelerate deployment:
+
+**Week 0 (Setup Phase):**
+- **Window 1 (Day 1):** VPS provisioning runs independently
+- **Window 2 (Day 2):** Node.js installation runs independently after VPS ready
+- **Window 3 (Days 2-3):** API key acquisition (z.ai, MiniMax, Meta) + Slack workspace setup + Telegram bot creation run in parallel (no dependencies)
+- **Window 4 (Day 3):** Base config deployment + workspace creation run in parallel after API keys ready
+- **Window 5 (Day 4):** Gateway start is final sequential step
+
+**Week 1 (Agent Onboarding):**
+- **Window 1 (Days 1-2):** All 10 agents' AGENTS.md/SOUL.md/TOOLS.md can be written in parallel (no dependencies)
+- **Window 2 (Days 3-4):** Shared skills + agent-specific skills deployment run in parallel (both independent)
+- **Window 3 (Days 5-6):** Social audit + competitor analysis + brand guidelines documentation run in parallel (different agents, different domains)
+- **Window 4 (Day 7):** Skill testing and Slack verification are sequential validation steps
+
+**Week 2 (Content Production):**
+- **Window 1 (Days 1-2):** Content calendar creation runs independently
+- **Window 2 (Days 2-3):** Daily automation script + asset library setup run in parallel (different systems)
+- **Window 3 (Days 4-5):** Content batch production runs independently (copywriter, social, designer work in parallel on different posts)
+- **Window 4 (Days 5-6):** Meta Business Suite linking + TikTok API config + GA4/pixels setup run in parallel (different platforms)
+- **Window 5 (Day 7):** Newsletter launch runs independently, performance monitoring is final step
+
+**Week 3-4 (Optimization):**
+- **Window 1 (Each Monday):** Performance analysis runs independently to inform rest of week
+- **Window 2 (Tuesday-Wednesday):** Dashboard automation + strategy review automation run in parallel (different scopes)
+- **Window 3 (Wednesday-Friday):** Multiple A/B tests launch in parallel (Instagram timing + TikTok thumbnails + Email subjects + Facebook copy all independent)
+- **Window 4 (Throughout week):** Content scaling happens in parallel with A/B testing (production vs testing are separate workflows)
+
+**Week 5-6 (Festival Campaign):**
+- **Window 1 (Week 5 Day 1):** Blog post + Instagram giveaway + Newsletter + TikTok countdown all launch in parallel (T-14 coordination)
+- **Window 2 (Week 5 Day 7):** Daily Stories + FB Event + Packing video all launch in parallel (T-7 coordination)
+- **Window 3 (Week 6 Festival Days):** Instagram Stories + TikTok videos + Facebook albums all run in parallel during live coverage (multi-platform real-time posting)
+- **Window 4 (Week 6 T+1):** Instagram recap + TikTok highlight + Newsletter all publish in parallel (post-festival content drop)
+
+**Week 7-8 (Final Sprint):**
+- **Window 1 (Week 7):** Pinkpop analysis + content replication + next festival planning run in parallel (different timeframes)
+- **Window 2 (Week 7):** Facebook push + Instagram push run in parallel (different platforms, same goal)
+- **Window 3 (Week 8):** Facebook + Instagram + Newsletter final pushes run in parallel (all-hands engagement sprint)
+- **Window 4 (Week 8):** Data compilation + report generation + success video run in parallel after content work completes
+
+### Agent Assignment Matrix
+
+| Week | CEO | Strategist | Copywriter | Social | SEO | Video | Email | Analyst | Designer | PM |
+|------|-----|------------|------------|--------|-----|-------|-------|---------|----------|-----|
+| **W0** | Health check coordination | - | - | - | - | - | - | - | - | Manual setup |
+| **W1** | Validation & approval | Social audit (20h)<br/>Competitor analysis (10h) | Brand guidelines docs (8h) | Platform linking (12h) | - | - | - | - | Asset templates (15h) | Workspace setup (25h)<br/>Skill deployment (10h) |
+| **W2** | Content approval (10h) | Calendar planning (15h) | Blog drafts (12h) | Post production (20h)<br/>Platform config (8h) | - | - | Newsletter (10h) | Analytics setup (12h)<br/>Monitoring (8h) | Visual assets (18h) | Automation deploy (10h)<br/>Coordination (10h) |
+| **W3** | Weekly reviews (5h) | Theme analysis (10h)<br/>Hashtag optimization (8h) | Scaled blogs (15h) | Scaled posts (25h) | - | - | - | Performance analysis (15h)<br/>Dashboard automation (10h)<br/>A/B tracking (12h) | Scaled visuals (22h) | Workflow optimization (12h) |
+| **W4** | Strategic decisions (8h) | Festival prep (12h)<br/>Pinkpop planning (15h) | FB copy testing (10h)<br/>Blogs (15h) | A/B implementation (10h)<br/>Scaled posts (28h) | - | - | Email A/B testing (12h) | FB engagement tracking (10h) | Scaled visuals (25h) | Batch automation (8h)<br/>Scale coordination (15h) |
+| **W5** | Client updates (8h) | Campaign adjustment (10h) | Pinkpop blog (8h) | Giveaway launch (12h)<br/>Daily Stories (15h)<br/>FB Event (5h) | - | Countdown series (18h)<br/>Packing video (6h) | Newsletter (8h) | Giveaway metrics (12h) | Festival assets (20h) | Timeline coordination (12h) |
+| **W6** | Live coordination (20h)<br/>Client updates (10h) | Learnings docs (8h) | - | Pre-festival posts (10h)<br/>Live Stories (25h)<br/>Photo albums (10h)<br/>Recap carousel (8h) | - | Pre-festival TikTok (6h)<br/>Live TikToks (20h)<br/>Highlight reel (10h) | Recap newsletter (10h) | Real-time monitoring (30h)<br/>Campaign analysis (12h) | Live assets (25h) | Live coordination (18h) |
+| **W7** | Client reporting (10h) | Next festival planning (15h) | Blogs (15h) | Content replication (12h)<br/>FB push (15h)<br/>IG push (15h)<br/>UGC campaign (10h) | - | - | List growth tactics (15h) | ROI analysis (15h)<br/>Goal tracking (10h) | Visuals (25h) | Coordination (12h) |
+| **W8** | Client session (10h)<br/>Next phase planning (15h) | - | Final content push (10h) | FB final push (20h)<br/>IG final push (20h) | - | Viral verification (5h)<br/>Success video (12h) | Final newsletter push (15h) | Data compilation (20h)<br/>Final report (20h) | Success presentation (15h) | Data archival (10h)<br/>Ops optimization (10h) |
+
+**Total Agent Hours (8 weeks):**
+- CEO: 96 hours
+- Strategist: 100 hours
+- Copywriter: 108 hours
+- Social Manager: 310 hours (highest utilization)
+- SEO Specialist: 0 hours (not needed for pilot, reactivate post-pilot)
+- Video Creator: 77 hours
+- Email Specialist: 70 hours
+- Data Analyst: 174 hours (second highest)
+- Graphic Designer: 185 hours (third highest)
+- Project Manager: 142 hours
+
+**Key Observations:**
+- Social Manager, Designer, and Analyst are the most heavily utilized agents
+- SEO Specialist is intentionally idle during pilot (focus on social growth first)
+- Week 6 (Festival Live) has highest concurrent agent activity
+- CEO time spikes during Week 6 (live coordination) and Week 8 (client handoff)
+
+### Checkpoint Gates
+
+Critical blockers that must complete before moving forward:
+
+#### Gate 0→1: Infrastructure Ready
+**Blocking Condition:** Gateway must be running with health checks passing
+- **Validation:** `curl http://localhost:18789/health` returns 200 OK
+- **Validation:** All 10 agent workspaces exist at `~/.clawdbot/agents/*/workspace`
+- **Validation:** All API keys verified (test call to z.ai, MiniMax, Meta, TikTok)
+- **Blocker Impact:** Without working infrastructure, no agents can operate
+- **Rollback Plan:** If gateway fails after 2 hours troubleshooting, rebuild VPS from scratch
+- **Responsible Agent:** PM (infrastructure validation)
+
+#### Gate 1→2: Skills Operational
+**Blocking Condition:** All shared skills must execute successfully
+- **Validation:** `meta-post` skill posts test content to staging account
+- **Validation:** `tiktok-analytics` skill returns dummy metrics without errors
+- **Validation:** `ga4-analytics` skill connects to Lavish property
+- **Validation:** `ahrefs-keywords` skill returns keyword data for "cocktails"
+- **Validation:** `mailchimp-send` skill creates test campaign
+- **Blocker Impact:** Cannot produce content without posting/analytics skills
+- **Rollback Plan:** If skill fails, use manual posting workflow temporarily
+- **Responsible Agent:** PM (skill validation), CEO (manual fallback approval)
+
+#### Gate 1→2: Brand Guidelines Complete
+**Blocking Condition:** Social audit + competitor analysis + brand docs must finish
+- **Validation:** Social audit report exists at `~/lavish-content/analytics/social-audit.md`
+- **Validation:** Competitor analysis covers minimum 5 brands with SWOT
+- **Validation:** Brand guidelines documented at `~/lavish-content/assets/brand-guidelines.md`
+- **Blocker Impact:** Cannot create on-brand content without these baselines
+- **Rollback Plan:** If audit incomplete, use generic cocktail industry guidelines temporarily
+- **Responsible Agent:** Strategist (audit/analysis), Designer (brand guidelines)
+
+#### Gate 2→3: Content Calendar Approved
+**Blocking Condition:** Week 2 calendar must be CEO-approved before production
+- **Validation:** Calendar exists at `~/lavish-content/calendar/week-2-plan.md`
+- **Validation:** CEO approval comment in Slack #ceo-commands
+- **Validation:** Minimum 21 Instagram + 14 TikTok + 14 Facebook slots filled
+- **Blocker Impact:** Cannot batch-produce content without approved calendar
+- **Rollback Plan:** If not approved, reduce volume to 50% and proceed with CEO-selected posts only
+- **Responsible Agent:** Strategist (calendar creation), CEO (approval gate)
+
+#### Gate 2→3: Analytics Tracking Live
+**Blocking Condition:** Must have baseline performance data before optimization
+- **Validation:** GA4 receiving pageviews from drinklavish.nl
+- **Validation:** Meta Pixel tracking Instagram/Facebook engagement
+- **Validation:** TikTok pixel tracking video views
+- **Validation:** First 48-hour performance report generated
+- **Blocker Impact:** Cannot run A/B tests or optimize without data
+- **Rollback Plan:** If tracking fails, use native platform analytics (Meta Business Suite, TikTok Creator Tools) manually
+- **Responsible Agent:** Analyst (tracking setup and validation)
+
+#### Gate 3→4: A/B Test Results Significant
+**Blocking Condition:** Week 3 A/B tests must have statistical significance before Week 4 implementation
+- **Validation:** Instagram timing test has >100 posts per variant
+- **Validation:** TikTok thumbnail test has >50 videos per variant
+- **Validation:** Engagement difference >15% between variants (or p-value <0.05)
+- **Blocker Impact:** Cannot confidently scale without validated best practices
+- **Rollback Plan:** If not significant, extend test duration into Week 4, implement winner in Week 5
+- **Responsible Agent:** Analyst (statistical validation), Strategist (test extension decision)
+
+#### Gate 4→5: 2x Scale Achieved
+**Blocking Condition:** Must successfully scale to 2x content volume before festival season
+- **Validation:** Week 4 produces minimum 5 Instagram posts/day
+- **Validation:** Week 4 produces minimum 4 TikTok videos/day
+- **Validation:** Content quality score remains >90% (CEO approval rate)
+- **Validation:** Agent workload remains sustainable (<40h/week per agent)
+- **Blocker Impact:** Cannot handle festival live coverage without 2x capacity
+- **Rollback Plan:** If unsustainable, reduce festival coverage scope or hire freelance creators
+- **Responsible Agent:** PM (capacity monitoring), CEO (quality gate)
+
+#### Gate 4→5: Festival Campaign Planned
+**Blocking Condition:** Pinkpop campaign timeline must be complete before Week 5
+- **Validation:** T-14 to T+3 calendar exists with all 10 milestones
+- **Validation:** All festival content assets pre-created (templates, hashtags, captions)
+- **Validation:** Live coverage automation tested with mock festival data
+- **Blocker Impact:** Cannot execute real-time coverage without detailed plan
+- **Rollback Plan:** If incomplete, focus on post-festival recap only (skip live coverage)
+- **Responsible Agent:** Strategist (campaign planning), Video (content prep)
+
+#### Gate 5→6: Pre-Festival Momentum Built
+**Blocking Condition:** Must have strong engagement before festival weekend
+- **Validation:** Pinkpop giveaway generates >500 entries
+- **Validation:** Instagram countdown Stories reach >10K impressions/day
+- **Validation:** TikTok countdown videos average >5K views each
+- **Blocker Impact:** Low pre-festival engagement indicates live coverage will underperform
+- **Rollback Plan:** If low momentum, boost top-performing posts with paid ads (€50 budget)
+- **Responsible Agent:** Social (momentum building), Analyst (engagement tracking)
+
+#### Gate 6→7: Festival Campaign Success
+**Blocking Condition:** Pinkpop campaign must deliver measurable results before next campaign
+- **Validation:** Instagram Stories during festival reach >50K total impressions
+- **Validation:** TikTok festival videos average >15K views
+- **Validation:** Facebook album engagement >200 reactions per album
+- **Validation:** Learnings documented in `~/lavish-content/analytics/pinkpop-learnings.md`
+- **Blocker Impact:** Cannot replicate success or improve for next festival
+- **Rollback Plan:** If underperformed, conduct post-mortem and adjust strategy for next festival
+- **Responsible Agent:** Analyst (campaign analysis), Strategist (learnings documentation)
+
+#### Gate 7→8: Progress Toward Goals
+**Blocking Condition:** Must show strong progress before final week sprint
+- **Validation:** Facebook engagement >250 likes/post (50% of 500 goal)
+- **Validation:** Instagram followers >6,000 (75% of 1,600 growth goal)
+- **Validation:** Newsletter subscribers >10,000 (on track for 12K by week 12)
+- **Blocker Impact:** If behind, Week 8 final push may not hit goals
+- **Rollback Plan:** If behind schedule, extend pilot to 10 weeks or adjust goals downward (400 FB likes instead of 500)
+- **Responsible Agent:** Analyst (goal tracking), CEO (goal adjustment decision)
+
+#### Gate 8→Post-Pilot: Client Approval
+**Blocking Condition:** Client must approve pilot results before ongoing operations
+- **Validation:** Final report delivered and reviewed
+- **Validation:** Client feedback score >4/5
+- **Validation:** Minimum 3 of 4 primary goals achieved (FB engagement, IG growth, TikTok viral, Newsletter)
+- **Blocker Impact:** Cannot proceed to ongoing contract without client satisfaction
+- **Rollback Plan:** If not approved, offer extended pilot (4 additional weeks) at discounted rate
+- **Responsible Agent:** CEO (client relationship), PM (contract transition)
+
+### Coordination Best Practices
+
+**Daily Standups (Automated):**
+- **Time:** 06:00 daily via `daily-content-production.sh`
+- **Participants:** All active agents (CEO, Strategist, Copywriter, Social, Video, Email, Analyst, Designer, PM)
+- **Format:** Slack #general channel
+- **Agenda:** Yesterday's wins, today's priorities, blockers
+
+**Weekly Strategy Reviews (Automated):**
+- **Time:** Monday 09:00 via `weekly-strategy-review.sh`
+- **Participants:** All agents
+- **Format:** Slack #general + Telegram summary for client
+- **Agenda:** Last week performance, this week plan, festival prep, team feedback
+
+**Festival Live Coordination:**
+- **Time:** Hourly during festival days (Week 6)
+- **Participants:** Social, Video, Analyst, CEO
+- **Format:** Slack #lavish-client + Telegram real-time updates
+- **Agenda:** Last hour metrics, next hour content plan, viral opportunities
+
+**Blocker Escalation Protocol:**
+1. **Agent-level blocker:** Agent posts in relevant Slack channel (e.g., #social-media)
+2. **Cross-agent blocker:** Agent tags PM in #project-management
+3. **Critical blocker:** PM tags CEO in #ceo-commands
+4. **Client-impacting blocker:** CEO notifies client via Telegram within 30 minutes
+
+**Parallel Work Handoff:**
+- When multiple agents work in parallel (e.g., Copywriter writes blog while Designer creates visuals), use shared workspace convention:
+  - Copywriter outputs to `~/lavish-content/drafts/blog-2026-06-15-draft.md`
+  - Designer reads draft, creates visuals, outputs to `~/lavish-content/assets/blog-2026-06-15-featured.png`
+  - Social Manager picks up both for final publishing
+- Use filename conventions: `{type}-{date}-{status}.{ext}` where status is `draft`, `review`, `approved`, `published`
+
+**Dependency Tracking:**
+- PM maintains master dependency graph in `~/lavish-content/calendar/dependencies.json`
+- Before starting any task, agent checks for `blockedBy` dependencies
+- After completing any task, agent posts to Slack to unblock downstream tasks
+- CEO reviews dependency graph every Monday during strategy review
+
+---
+
 ## Post-Pilot: Continuous Operation
 
 ### 🔄 Ongoing Maintenance
