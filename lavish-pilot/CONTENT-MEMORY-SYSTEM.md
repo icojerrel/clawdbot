@@ -27,6 +27,46 @@
 
 ## 📂 CONTENT TRACKING DATABASE
 
+The memory system uses a **hybrid approach**:
+- **MEMORY.md** (Auto-loaded) - Persistent brand context and guidelines
+- **Append-only log** (JSONL) - All published content history
+- **Per-agent context** (JSON) - Individual agent learning and patterns
+- **Per-platform state** (JSON) - Platform-specific tracking
+- **Ideas pool** (JSON) - Future content planning
+
+### 🆕 MEMORY.md Bootstrap Integration
+
+**What is MEMORY.md?**
+- Automatically loaded by Clawdbot agents at every session start (upstream commit 2cbc991b)
+- Provides curated long-term memory without requiring embedding providers
+- Contains brand guidelines, successful formulas, compliance rules, recent performance insights
+
+**Location**: `/home/user/clawdbot/lavish-pilot/MEMORY.md`
+
+**How It Works**:
+1. Agent starts new session
+2. Clawdbot automatically loads MEMORY.md into agent context
+3. Agent has immediate access to:
+   - Brand voice guidelines (English-only policy)
+   - Legal compliance requirements (18+ disclaimers)
+   - Content quality gates
+   - Recent performance insights
+   - Successful content formulas
+   - Theme rotation schedules
+   - Current campaign objectives
+
+**Integration with JSONL System**:
+- **MEMORY.md** = Curated, human-reviewed guidelines (updated weekly/monthly)
+- **content-history.jsonl** = Real-time append-only log (updated every publish)
+- **Agents combine both**: MEMORY.md for strategy, JSONL for tactical duplicate checking
+
+**When to Update MEMORY.md**:
+- Brand strategy changes
+- New compliance requirements discovered
+- Performance patterns emerge (update "Recent Content Performance" section)
+- Campaign objectives change (quarterly)
+- Successful content formulas identified
+
 ### Location
 ```
 /root/.lavish-pilot/memory/
@@ -43,6 +83,9 @@
     ├── tiktok.json
     ├── facebook.json
     └── youtube.json
+
+# Auto-loaded at session start
+../MEMORY.md                      # Brand context, guidelines, formulas
 ```
 
 ---
@@ -562,6 +605,14 @@ esac
 **Social Media Manager Agent Workflow:**
 
 ```javascript
+// 🆕 SESSION START: MEMORY.md auto-loaded by Clawdbot
+// Agent already has access to:
+// - Brand voice guidelines (English-only)
+// - Legal compliance (18+ disclaimers)
+// - Content quality gates
+// - Recent performance insights from MEMORY.md
+// - Successful content formulas
+
 // 1. BEFORE creating content
 const memory = readJSON('memory/agent-context/social-manager.json');
 const platformState = readJSON('memory/platform-state/instagram.json');
@@ -575,20 +626,35 @@ const underusedThemes = Object.keys(recentThemes)
 console.log(`Prioritize these themes: ${underusedThemes.join(', ')}`);
 
 // 2. GENERATE content (using underused theme)
+// Uses MEMORY.md guidelines automatically:
+// - English ONLY (no Dutch mixing)
+// - Premium, energetic tone
+// - Successful formulas for Instagram Reels
 const newPost = generateInstagramPost({
   theme: underusedThemes[0],
   avoid_patterns: memory.avoid_patterns,
-  use_patterns: memory.successful_patterns
+  use_patterns: memory.successful_patterns,
+  // MEMORY.md provides these automatically:
+  // - brand_voice: from MEMORY.md "Brand Identity & Voice"
+  // - compliance: from MEMORY.md "Legal Compliance"
+  // - posting_time: from MEMORY.md "Best Posting Times"
 });
 
-// 3. CHECK for duplicates
+// 3. CHECK for duplicates (JSONL real-time check)
 const isDuplicate = await checkDuplicate('instagram', underusedThemes[0]);
 if (isDuplicate) {
   console.log('Duplicate detected - trying different angle');
   newPost = generateInstagramPost({ theme: underusedThemes[1] });
 }
 
-// 4. AFTER publishing
+// 4. QUALITY GATES (from MEMORY.md)
+// Auto-verify before publishing:
+// ✅ Language check (100% English)
+// ✅ Age disclaimer present
+// ✅ Duplicate check passed
+// ✅ Brand alignment (premium, inclusive)
+
+// 5. AFTER publishing
 await logContent({
   platform: 'instagram',
   type: 'feed_post',
@@ -600,6 +666,49 @@ await logContent({
 memory.recent_posts.push({id: postID, theme: underusedThemes[0]});
 memory.content_themes_used[underusedThemes[0]] += 1;
 writeJSON('memory/agent-context/social-manager.json', memory);
+```
+
+### Memory System Layers
+
+**Layer 1: MEMORY.md (Strategy - Auto-loaded)**
+- Brand identity & voice
+- Legal compliance rules
+- Content formulas that work
+- Theme rotation guidelines
+- Performance insights (updated weekly)
+- Campaign objectives
+
+**Layer 2: content-history.jsonl (Tactical - Real-time)**
+- Every piece of content ever posted
+- Real-time duplicate detection
+- Cross-platform tracking
+- Performance metrics (updated daily)
+
+**Layer 3: Agent Context (Personal - Per-session)**
+- What this specific agent has posted
+- Themes used by this agent
+- Patterns this agent learned
+- Next themes to explore
+
+**How They Work Together**:
+```
+Agent starts session
+  ↓
+MEMORY.md loaded (brand guidelines)
+  ↓
+Agent reads own context (recent work)
+  ↓
+Agent checks JSONL (duplicate prevention)
+  ↓
+Agent creates content (following MEMORY.md rules)
+  ↓
+Agent verifies quality gates (from MEMORY.md)
+  ↓
+Agent publishes
+  ↓
+Agent logs to JSONL (real-time tracking)
+  ↓
+Agent updates own context (learning)
 ```
 
 ---
